@@ -1,6 +1,7 @@
 
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 img = [  # images
@@ -352,8 +353,10 @@ def baseline_difference_test():
 
 
     double_out = abs(out - baseline)
-    cv2.imshow('double out', double_out)
-    cv2.waitKey()
+    plt.imshow(double_out)
+    plt.show()
+   # cv2.imshow('double out', double_out)
+    #cv2.waitKey()
 
 
 
