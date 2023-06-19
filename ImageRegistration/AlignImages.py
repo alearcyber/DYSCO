@@ -18,6 +18,23 @@ dash_s = cv2.imread("images/dash4.jpg") # screenshot of the dashboard. Expected 
 
 
 
+#shows an image
+def show(image, title=None):
+    plt.imshow(image)
+    if not (title is None):
+        plt.title(title)
+    plt.show()
+
+
+#does the morphology thing
+def morph(image):
+    im = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(im, 127, 255, cv2.THRESH_OTSU)
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    m = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
+    return m
+
+
 
 #extend image bounds with blank pixels so they match.
 def extend_image(a, b):
@@ -359,16 +376,63 @@ def baseline_difference_test():
     #cv2.waitKey()
 
 
+#preprocessing pipeline
+def preprocessing_pipeline(im):
+    #division normalization
+    gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)  # grayscale
+    show(gray, 'original')
+    blur = cv2.GaussianBlur(gray, (0, 0), sigmaX=33, sigmaY=33)  # blur
+    show(blur, 'blur')
+
+    divide = cv2.divide(gray, blur, scale=255)
+    show(divide, 'divide')
+    # _, thresh = cv2.threshold(divide, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    # _, thresh = cv2.threshold(divide, 127, 255, cv2.THRESH_BINARY)
+    #_, thresh = cv2.threshold(divide, 127, 255, cv2.THRESH_OTSU)
+    #thresh = cv2.adaptiveThreshold(divide, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
+    #thresh = cv2.adaptiveThreshold(divide, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+    thresh = cv2.adaptiveThreshold(divide, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_OTSU, 11, 2)
+    show(thresh, 'threshold')
+
+
+    _, thresh2 = cv2.threshold(thresh, 240, 255, cv2.THRESH_OTSU)
+    show(thresh2, 'second threshold')
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    morph = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
+    return morph
+
+
+def test_morph():
+    #align the images
+    a, b = align_images(img[3], dash)
+    #a, b = align_images(img[0], dash)
+    show(a, 'aligned')
+    show(b, 'aligned')
+
+    #morphology process
+    out = abs(morph(a) - morph(b))
+    show(out, "difference")
+
+
+    #draw contours
+    contours, hierarchy = cv2.findContours(out, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    cv2.drawContours(out, contours, 3, (0, 255, 0), 3)
+    show(out, 'out')
+
+
+
 
 
 
 
 if __name__ == '__main__':
-    #ecc_example(img[0], img[1])
-    #ecc_example(cv2.imread('/Users/aidanlear/Desktop/Research2023/TESTIMAGES/desktop1.png'), cv2.imread('/Users/aidanlear/Desktop/Research2023/TESTIMAGES/desktop2.png'))
-    baseline_difference_test()
-    #div_norm_test(img[0])
-    #test2()
+    #baseline_difference_test()
+    #preprocessing_pipeline(img[3])
+    test_morph()
+
+
+
 
 
 
