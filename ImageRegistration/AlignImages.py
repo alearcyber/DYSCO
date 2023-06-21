@@ -2,6 +2,7 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+import Morphology
 
 
 img = [  # images
@@ -20,7 +21,7 @@ dash_s = cv2.imread("images/dash4.jpg") # screenshot of the dashboard. Expected 
 
 #shows an image
 def show(image, title=None):
-    plt.imshow(image)
+    plt.imshow(image, cmap='gray')
     if not (title is None):
         plt.title(title)
     plt.show()
@@ -391,11 +392,11 @@ def preprocessing_pipeline(im):
     #_, thresh = cv2.threshold(divide, 127, 255, cv2.THRESH_OTSU)
     #thresh = cv2.adaptiveThreshold(divide, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
     #thresh = cv2.adaptiveThreshold(divide, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-    thresh = cv2.adaptiveThreshold(divide, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_OTSU, 11, 2)
+    thresh = cv2.adaptiveThreshold(divide, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY + cv2.THRESH_OTSU, 11, 2)
     show(thresh, 'threshold')
 
 
-    _, thresh2 = cv2.threshold(thresh, 240, 255, cv2.THRESH_OTSU)
+    _, thresh2 = cv2.threshold(thresh, 240, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     show(thresh2, 'second threshold')
 
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
@@ -403,6 +404,7 @@ def preprocessing_pipeline(im):
     return morph
 
 
+#this produces the second good result
 def test_morph():
     #align the images
     a, b = align_images(img[3], dash)
@@ -424,12 +426,88 @@ def test_morph():
 
 
 
+#--morph pipeline--
+#Align the images.
+#Apply morph to original and template image
+#   convert images to grayscale
+#   threshold the image
+#   Create a kernel
+#   apply morphology
+#
+#So, here are the variables that can potentially be modified:
+#   threshold value: 0 thru 255
+#   Threshold type: Binary, Otsu's, Adaptive Gaussian, Adaptive Mean
+#   The Kernel: ??? (could really be any type of kernel)
+#       I guess I will start with a 4 neighborhood and an 8 neighborhood.
+#   Morphology Operation Type: Close, Open, Dilation, Erosion, whitehat, blackhat, gradient.
+#
+#
+def morph_pipeline(image):
+
+    im = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(im, 127, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    #kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3)) #8 neighborhood
+    kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3)) #4 neighborhood
+    m = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
+
+
+#For this one I want to mess with some of the morphology parameters.
+#SO I want to try with different Kernel shapes, sizes, and morph types
+#4 and 8 neighborhoods of size 3x3 and 5x5.
+#The morphology type tested will be Close, Open, Dilation, and Erosion.
+#They will not be a total combination of all of these, rather I will start with a
+# base operation, and then change only the variable being tested from that base operation.
+#The base operation will be an 8 neighborhood, 3x3 kernel, close morph
+def test_morph_2():
+    #read in the images to be tested and align them up for processing
+    query, template = align_images(img[3], dash)
+    query = cv2.cvtColor(query, cv2.COLOR_BGR2GRAY) # convert query image to grayscale
+    template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY) # convert template image to grayscale
+    show(query, 'query image') # show query image to user
+    show(template, 'template image') # show template image to user
+
+    #apply division normalization
+    blur_query = cv2.GaussianBlur(query, (0, 0), sigmaX=15, sigmaY=15)
+    blur_template = cv2.GaussianBlur(template, (0, 0), sigmaX=15, sigmaY=15)
+    query = cv2.divide(query, blur_query, scale=255)
+    template = cv2.divide(template, blur_template, scale=255)
+    show(query, 'division normalized query')
+    show(template, 'division normalized template')
+
+
+
+    #difference between query and template image
+    diff = abs(query - template)
+    _, diff_thresh = cv2.threshold(diff, 127, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    show(diff, 'difference')
+    show(diff_thresh, "Thresholded Raw Difference")
+    show(abs(diff_thresh - diff), "Difference between thresholds")
+
+
+    #base morphology: 8 neighborhood, 3x3 kernel, close morph
+    _, query_thresh = cv2.threshold(query, 127, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    _, template_thresh = cv2.threshold(template, 127, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    show(query_thresh, 'Thresholded Query Image')
+    show(template_thresh, 'Thresholded Template Image')
+    query_morph = cv2.morphologyEx(query_thresh, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3)))
+    template_morph = cv2.morphologyEx(template_thresh, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3)))
+    show(query_morph, 'Morphed Query Image')
+    show(template_morph, 'Morphed Template Image')
+
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
     #baseline_difference_test()
     #preprocessing_pipeline(img[3])
     test_morph()
+    #morph_pipeline(img[3])
+    #test_morph_2()
 
 
 
