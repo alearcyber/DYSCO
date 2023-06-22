@@ -2,12 +2,20 @@
 This file explores law's texture masks and kernels.
 
 TODO: finish writing out the details of this file
+
+
+Quick Reminder about numpy array shapes as it relates to image dimensions:
+ the first dimension in shape is the number of rows, aka the height
+ the second dimension in shape is the number of columns, aka the width
+ the third dimension in shape is the color channels, aka the depth or "bands"
 """
 
 
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+import DataProcessing
+from sklearn.preprocessing import MinMaxScaler
 
 
 
@@ -95,17 +103,51 @@ def test_removing_illumination():
 
 #Applies the 16 kernels to the image to create 16 bands of texture features,
 # (each band has 3 colors).
+#Returns a numpy array of the images all kind of stacked and mashed together into one image.
+#Currently does not label the different bands in any significant way.
+def generate_texture_features(img):
+    out = np.empty(shape=(img.shape[0], img.shape[1], 0), dtype='uint8')
+    for descriptor, kernel in texture_kernels:
+        layer = cv2.filter2D(img, ddepth=-1, kernel=kernel)
+        out = np.concatenate((out, layer), axis=2)
+    return out
+
+
+#Applies the 16 kernels to the image to create 16 bands of texture features,
+# (each band has 3 colors).
 #Returns the 16 images as a list.
 #Currently does not label the different bands in any significant way
-def generate_texture_features(img):
-    img = remove_illumination(img)
+def generate_texture_features_example(img):
     for descriptor, kernel in texture_kernels:
         out = cv2.filter2D(img, ddepth=-1, kernel=kernel)
+        print('dtype:', out.dtype)
+        print('shape:', out.shape)
         #cv2.imwrite("TextureMaskExamples/" + descriptor + ".png", out)  #this line saves the masks
         show(out, descriptor)
 
 
+
+#will analyze the variance accounted for by the first n principle components for an example image
+def pca_variance_text():
+    #create the texture features
+    X = generate_texture_features(cv2.imread('images/fail3.jpg'))
+
+    #flatten the image
+    original_dimensions = X.shape
+    X = np.reshape(X, (-1, original_dimensions[2]))
+    print('falttened shape:', X.shape)
+    # data normalization
+    scaler = MinMaxScaler()
+    scaler.fit(X.astype(float))
+    X = scaler.transform(X)
+
+    #plot the PC variance
+    DataProcessing.plot_pca_variance(X, n_components=15)
+
+
+
+
 if __name__ == '__main__':
-    generate_texture_features(cv2.imread('images/fail3.jpg'))
+    pca_variance_text()
 
 
