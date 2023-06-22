@@ -16,6 +16,7 @@ import cv2
 import matplotlib.pyplot as plt
 import DataProcessing
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.cluster import KMeans
 
 
 
@@ -128,18 +129,20 @@ def generate_texture_features_example(img):
 
 
 #will analyze the variance accounted for by the first n principle components for an example image
-def pca_variance_text():
+def pca_variance_test():
     #create the texture features
     X = generate_texture_features(cv2.imread('images/fail3.jpg'))
 
     #flatten the image
     original_dimensions = X.shape
     X = np.reshape(X, (-1, original_dimensions[2]))
-    print('falttened shape:', X.shape)
+
     # data normalization
+    """
     scaler = MinMaxScaler()
     scaler.fit(X.astype(float))
     X = scaler.transform(X)
+    """
 
     #plot the PC variance
     DataProcessing.plot_pca_variance(X, n_components=15)
@@ -147,7 +150,16 @@ def pca_variance_text():
 
 
 
+#first attempt at clustering
+def first_cluster_attempt():
+    # create the texture features
+    X = generate_texture_features(cv2.imread('images/fail3.jpg'))
+
+    #TODO CONTINUE HERE, figure out what kind of clustering to do. Not just kmeans
+    # but like how can I take into account pixels being near each other?
+    # There is good example in Digital Image Processing book.
+
 if __name__ == '__main__':
-    pca_variance_text()
+    pca_variance_test()
 
 
