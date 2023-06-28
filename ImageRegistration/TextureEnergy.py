@@ -148,6 +148,20 @@ def pca_variance_test():
     DataProcessing.plot_pca_variance(X, n_components=15)
 
 
+#I want to compare my output here to my output in image j.
+#I will convolve the image the same way here and in image j as a sort of
+# sanity check. They should look the same.
+#Will use edge-level kernel
+#
+#NOTE: After comparing, they look like they are approximately the same. There are notable differences, e.i. they
+# are not identical, but I think that is most likely do to scaling or something like that?
+def test_a_texture():
+    image = cv2.imread("images/fail4.jpg")
+    filtered = cv2.filter2D(image, ddepth=-1, kernel=el)
+    cv2.imshow('filtered with edge level kernel', filtered)
+    cv2.waitKey()
+
+
 
 
 #first attempt at clustering
@@ -160,6 +174,6 @@ def first_cluster_attempt():
     # There is good example in Digital Image Processing book.
 
 if __name__ == '__main__':
-    pca_variance_test()
+    test_a_texture()
 
 
