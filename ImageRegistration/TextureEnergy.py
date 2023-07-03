@@ -15,8 +15,15 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 import DataProcessing
+import pandas as pd
+from sklearn.decomposition import PCA
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.cluster import KMeans
+from DataProcessing import plot_pca_variance
+
+
+#seed for random states
+RANDOM_STATE = 25
 
 
 
@@ -177,17 +184,70 @@ def test_a_texture():
 
 
 
+
+
 #first attempt at clustering
 def first_cluster_attempt():
     # create the texture features
+    print('Generating texture features...')
     X = generate_texture_features(cv2.imread('images/fail3.jpg'))
 
     #TODO CONTINUE HERE, figure out what kind of clustering to do. Not just kmeans
     # but like how can I take into account pixels being near each other?
     # There is good example in Digital Image Processing book.
 
+
+    #flatten the data
+    print('Flattening image...')
+    original_dimensions = X.shape
+    X = np.reshape(X, (-1, original_dimensions[2]))
+    print(X.shape)
+    return None
+
+    #extract first two principle components
+    X_pca = (pca := PCA(n_components=2)).fit_transform(X)
+
+
+    #Just regular kmeans clustering. I wont take into account any sort of
+    # locality or spacial information from the image.
+    km = KMeans(n_clusters=2, random_state=RANDOM_STATE)
+    km.fit(X)
+
+    # centroids
+    centroids = pd.DataFrame(pca.transform(km.cluster_centers_), columns=['PC1', 'PC2'])
+
+
+    # prediction label colors
+    color1 = np.array(['green', 'red', 'blue', 'yellow', 'purple', 'brown'])
+    colors = np.array(list('rgbymckrgbymckrgbymck'))
+    pred_y = pd.DataFrame(km.labels_, columns=['Target'])
+
+    #data visualization
+    pc1, pc2 = X_pca[:, 0], X_pca[:, 1]
+    plt.scatter(pc1, pc2, c=color1[pred_y['Target']], s=5)
+    plt.scatter(centroids['PC1'], centroids['PC2'], c='k', s=10)
+    plt.xlabel('PC 1', fontsize=14)
+    plt.ylabel('PC 2', fontsize=14)
+    plt.title('Kmeans Clustering')
+    plt.show()
+
+
+
+def test_macro_feature_extraction():
+    out = cv2.filter2D(cv2.imread('images/fail3.jpg'), ddepth=-1, kernel=ll)
+    sampling_grid = DataProcessing.grid_out_image(out, 15, 10)
+
+    for row in range(10):
+        for col in range(15):
+            window = sampling_grid[row][col]
+            print('avg:', np.average(window), '  std:', np.std(window))
+            #cv2.imshow(f'window at row:{row}, col:{col}', window)
+
+
 if __name__ == '__main__':
-    generate_texture_features_example(cv2.imread('images/fail3.jpg'))
+    #pca_variance_test()
+    #generate_texture_features_example(cv2.imread('images/fail3.jpg'))
     #test_a_texture()
+    test_macro_feature_extraction()
 
 
