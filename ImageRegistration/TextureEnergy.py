@@ -24,37 +24,50 @@ from sklearn.cluster import KMeans
 level = np.array([[1, 4, 6, 4, 1]])
 edge = np.array([[-1, -2, 0, 2, 1]])
 spot = np.array([[-1, 0, 2, 0, -1]])
+wave = np.array([[-1, 2, 0, -2, 1]])
 ripple = np.array([[1, -4, 6, -4, 1]])
 
 #edge kernels
 el = np.dot(edge.reshape(-1, 1), level)
 ee = np.dot(edge.reshape(-1, 1), edge)
 es = np.dot(edge.reshape(-1, 1), spot)
+ew = np.dot(edge.reshape(-1, 1), wave)
 er = np.dot(edge.reshape(-1, 1), ripple)
 
 #level kernels
 ll = np.dot(level.reshape(-1, 1), level)
 le = np.dot(level.reshape(-1, 1), edge)
 ls = np.dot(level.reshape(-1, 1), spot)
+lw = np.dot(level.reshape(-1, 1), wave)
 lr = np.dot(level.reshape(-1, 1), ripple)
 
 #spot kernels
 sl = np.dot(spot.reshape(-1, 1), level)
 se = np.dot(spot.reshape(-1, 1), edge)
 ss = np.dot(spot.reshape(-1, 1), spot)
+sw = np.dot(spot.reshape(-1, 1), wave)
 sr = np.dot(spot.reshape(-1, 1), ripple)
+
+#wave kernels
+wl = np.dot(wave.reshape(-1, 1), level)
+we = np.dot(wave.reshape(-1, 1), edge)
+ws = np.dot(wave.reshape(-1, 1), spot)
+ww = np.dot(wave.reshape(-1, 1), wave)
+wr = np.dot(wave.reshape(-1, 1), ripple)
 
 #ripple kernels
 rl = np.dot(ripple.reshape(-1, 1), level)
 re = np.dot(ripple.reshape(-1, 1), edge)
 rs = np.dot(ripple.reshape(-1, 1), spot)
+rw = np.dot(ripple.reshape(-1, 1), wave)
 rr = np.dot(ripple.reshape(-1, 1), ripple)
 
 texture_kernels = [ # list of 2-tuples: ('name', kernel)
-    ('edge x level', el), ('edge x edge', ee), ('edge x spot', es), ('edge x ripple', er),
-    ('level x level', ll), ('level x edge', le), ('level x spot', ls), ('level x ripple', lr),
-    ('spot x level', sl), ('spot x edge', se), ('spot x spot', ss), ('spot x ripple', sr),
-    ('ripple x level', rl), ('ripple x edge', re), ('ripple x spot', rs), ('ripple x ripple', rr),
+    ('edge x level', el), ('edge x edge', ee), ('edge x spot', es), ('edge x wave', ew), ('edge x ripple', er),
+    ('level x level', ll), ('level x edge', le), ('level x spot', ls), ('level x wave', lw), ('level x ripple', lr),
+    ('spot x level', sl), ('spot x edge', se), ('spot x spot', ss), ('spot x wave', sw), ('spot x ripple', sr),
+    ('wave x level', wl), ('wave x edge', we), ('wave x spot', ws), ('wave x wave', ww), ('wave x ripple', wr),
+    ('ripple x level', rl), ('ripple x edge', re), ('ripple x spot', rs), ('ripple x wave', rw), ('ripple x ripple', rr),
 ]
 
 
@@ -121,9 +134,9 @@ def generate_texture_features(img):
 def generate_texture_features_example(img):
     for descriptor, kernel in texture_kernels:
         out = cv2.filter2D(img, ddepth=-1, kernel=kernel)
-        print('dtype:', out.dtype)
-        print('shape:', out.shape)
-        #cv2.imwrite("TextureMaskExamples/" + descriptor + ".png", out)  #this line saves the masks
+        #print('dtype:', out.dtype)
+        #print('shape:', out.shape)
+        cv2.imwrite("TestResults/TextureMaskExamples/" + descriptor + ".png", out)  #this line saves the masks
         show(out, descriptor)
 
 
@@ -174,6 +187,7 @@ def first_cluster_attempt():
     # There is good example in Digital Image Processing book.
 
 if __name__ == '__main__':
-    test_a_texture()
+    generate_texture_features_example(cv2.imread('images/fail3.jpg'))
+    #test_a_texture()
 
 
