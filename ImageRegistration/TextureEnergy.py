@@ -127,9 +127,23 @@ def test_removing_illumination():
 #Returns a numpy array of the images all kind of stacked and mashed together into one image.
 #Currently does not label the different bands in any significant way.
 def generate_texture_features(img):
+    if len(img.shape) == 2: #image is in grayscale
+        return _generate_texture_features_gray(img)
+
     out = np.empty(shape=(img.shape[0], img.shape[1], 0), dtype='uint8')
     for descriptor, kernel in texture_kernels:
         layer = cv2.filter2D(img, ddepth=-1, kernel=kernel)
+        out = np.concatenate((out, layer), axis=2)
+    return out
+
+
+#helper for generate_texture_features() to handle grayscale images
+def _generate_texture_features_gray(img):
+    out = np.empty(shape=(img.shape[0], img.shape[1], 0), dtype='uint8')
+    for descriptor, kernel in texture_kernels:
+        layer = cv2.filter2D(img, ddepth=-1, kernel=kernel)
+        # expand dimensions of layer
+        layer = np.expand_dims(layer, axis=2)
         out = np.concatenate((out, layer), axis=2)
     return out
 
@@ -187,10 +201,16 @@ def test_a_texture():
 
 
 #first attempt at clustering
-def first_cluster_attempt():
+def first_cluster_attempt(gray=False):
     # create the texture features
     print('Generating texture features...')
-    X = generate_texture_features(cv2.imread('images/fail3.jpg'))
+
+    if gray:
+        image = cv2.imread('images/fail3.jpg', cv2.IMREAD_GRAYSCALE)
+    else:
+        image = cv2.imread('images/fail3.jpg')
+
+    X = generate_texture_features(image)
 
     #TODO CONTINUE HERE, figure out what kind of clustering to do. Not just kmeans
     # but like how can I take into account pixels being near each other?
@@ -218,7 +238,6 @@ def first_cluster_attempt():
 
     # prediction label colors
     color1 = np.array(['green', 'red', 'blue', 'yellow', 'purple', 'brown'])
-    colors = np.array(list('rgbymckrgbymckrgbymck'))
     pred_y = pd.DataFrame(km.labels_, columns=['Target'])
 
     #data visualization
@@ -243,11 +262,26 @@ def test_macro_feature_extraction():
             #cv2.imshow(f'window at row:{row}, col:{col}', window)
 
 
+# this code will average all the texture bands into one grayscale image
+def average_all_bands():
+    X = generate_texture_features(cv2.imread('images/fail3.jpg'))
+    #X = cv2.imread('images/fail3.jpg')
+    print('shape of X:', X.shape)
+    X_gray = np.mean(X, axis=2).astype(np.uint8)
+    print('shape of X_gray:', X_gray.shape)
+    #cv2.imwrite('TestResults/misc-images/texture-grayscale.png', X_gray)
+    cv2.imshow('hyperspectral grayscale', X_gray)
+    cv2.waitKey()
+
+
 if __name__ == '__main__':
-    pca_variance_test()
+    """entry point"""
+    #pca_variance_test()
     #generate_texture_features_example(cv2.imread('images/fail3.jpg'))
     #test_a_texture()
-    #first_cluster_attempt()
+    #first_cluster_attempt(gray=True)
     #test_macro_feature_extraction()
+    average_all_bands()
+
 
 
