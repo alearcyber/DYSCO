@@ -202,7 +202,6 @@ def first_cluster_attempt():
     original_dimensions = X.shape
     X = np.reshape(X, (-1, original_dimensions[2]))
     print(X.shape)
-    return None
 
     #extract first two principle components
     X_pca = (pca := PCA(n_components=2)).fit_transform(X)
@@ -245,9 +244,10 @@ def test_macro_feature_extraction():
 
 
 if __name__ == '__main__':
-    #pca_variance_test()
+    pca_variance_test()
     #generate_texture_features_example(cv2.imread('images/fail3.jpg'))
     #test_a_texture()
-    test_macro_feature_extraction()
+    #first_cluster_attempt()
+    #test_macro_feature_extraction()
 
 
