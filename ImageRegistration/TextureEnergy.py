@@ -274,6 +274,28 @@ def average_all_bands():
     cv2.waitKey()
 
 
+def ontosomethinghere():
+    query = cv2.imread('images/fail3.jpg')
+    train = cv2.imread("images/dash4.jpg")
+    print('Aligning images...')
+    query, train = DataProcessing.align_images(query, train)
+    print('Generating query texture features...')
+    query = generate_texture_features(query)
+    print('Generating train texture features...')
+    train = generate_texture_features(train)
+    print('Converting to Grayscale..')
+    query_gray = np.mean(query, axis=2).astype(np.uint8)
+    train_gray = np.mean(train, axis=2).astype(np.uint8)
+    print('Combining grayscale images...')
+    #out = np.add(query_gray, train_gray) // 2
+    out = abs(query_gray - train_gray)
+
+    cv2.imshow('out', out)
+    cv2.waitKey()
+
+
+
+
 if __name__ == '__main__':
     """entry point"""
     #pca_variance_test()
@@ -281,7 +303,8 @@ if __name__ == '__main__':
     #test_a_texture()
     #first_cluster_attempt(gray=True)
     #test_macro_feature_extraction()
-    average_all_bands()
+    #average_all_bands()
+    ontosomethinghere()
 
 
 
