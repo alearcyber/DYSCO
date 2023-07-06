@@ -274,6 +274,8 @@ def average_all_bands():
     cv2.waitKey()
 
 
+#TODO - make this function more descriptive in name.
+# it is a pixelwise comparison of the composite texture images.
 def ontosomethinghere():
     query = cv2.imread('images/fail3.jpg')
     train = cv2.imread("images/dash4.jpg")

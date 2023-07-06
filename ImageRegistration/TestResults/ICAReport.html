@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ICA Report</title>
+</head>
+<body>
+<h2>ICA Comparison</h2>
+    <p>ICA was done using fastICA on just a lone picture of an obstructed dashboard.</p>
+    <p>The image used:</p>
+    <img src="misc-images/fail3.jpg" height="300" alt="">
+    <br>
+    <p>First Independent Component:</p>
+    <img src="misc-images/ica-component1.png" height="300" alt="">
+
+<br>
+<p>second independent component:</p>
+<img src="misc-images/ica-component2.png" height="300" alt="">
+
+<br><br>
+
+
+<p>
+    Bottom of the line, it looks really promising. What was done above is just with
+    a single image. I need to try again but I include the expected as input.
+</p>
+
+<h3>Composite of expected and captured output.</h3>
+<img src="misc-images/composite-mixed-signals.png" height="300" alt="">
+<p>The image above is a composite of a screenshot of the expected output,
+    and picture of the obstructed visualization. (it is a mean composite)</p>
+
+<br><br><br>
+<h3>Rescaled ICA</h3>
+<p>
+    This is ICA done on the screeshot mixed with the image.
+    The difference is that it has been rescaled for 0 to 255. It seems to more clearly show what is going
+    on that the images that are scaled for matplotlib in green/yellow.
+</p>
+<img src="misc-images/mixed-signal-ica-grayscale.png" height="300" alt="">
+
+<h3>More Examples of scaled ICA</h3>
+<p>I think there is some randomness in ICA. I ran the same code as the above image multiple times to
+generate this sampling of output.</p>
+
+<img src="misc-images/ica-example2.png" height="300" alt="">
+<br><br>
+<img src="misc-images/ica-example3.png" height="300" alt="">
+
+<br><br>
+<p>
+    Just based on these, it can be seen how there is some randomness,
+    i.e. they are not all the same, but there is consistency in the highlighting
+    of the obstructed region.
+</p>
+
+<p>
+    NOTE: the above are done using the 'parallel' algorithm for fastICA.
+    Will proceed to do some tests with the 'deflation' algorithm.
+    Based on what I have been reading, parallel is faster, deflation is slower.
+    The tradeoff being that deflation will be more accurate in general, and
+    will be more accurate given the initial assumptions required for ICA
+    might not hold very well.
+</p>
+
+<br><br><br>
+<h3>ICA with Deflation Algorithm</h3>
+<p>Like before, these are all examples generated from the same original
+two mixed signals. The only reason they are different is because of the rng
+in the ica algorithm.</p>
+<img src="misc-images/deflation-ica1.png" height="300" alt="">
+<br><br>
+<img src="misc-images/deflation-ica2.png" height="300" alt="">
+
+
+
+</body>
+</html>

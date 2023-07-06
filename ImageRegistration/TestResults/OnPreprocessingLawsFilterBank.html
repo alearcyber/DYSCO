@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<p>Here are some of the things law did for preprocessing his filter banks</p>
+
+<br><br>
+<h3>Conversion to Grayscale</h3>
+<p>This step ensures that the image contains only intensity information, which is relevant for texture analysis</p>
+
+<br><br>
+<h3>Resize and Padding</h3>
+<p>The grayscale image is optionally resized to a fixed size or aspect ratio to ensure consistency across
+  different images. Additionally, padding may be applied to the image to obtain a square image, which
+  simplifies the filter bank computations. The padding can be done by extending the image edges or filling
+  with appropriate values</p>
+
+<br><br>
+<h3>Local Contrast Normalization</h3>
+<p> Law applied local contrast normalization to the grayscale image. This step helps to enhance the
+  texture details and reduce the influence of overall illumination variations. Local contrast normalization
+  can be performed by subtracting the local mean from each pixel and dividing by the local standard deviation.
+  It ensures that the image has a consistent contrast distribution across different regions.</p>
+
+<br><br>
+<h3>Centering</h3>
+<p>The normalized image is centered by subtracting the global mean value of the image from each pixel.
+  This step helps to eliminate any global intensity variations and ensures that the filter bank response
+  is primarily based on local texture variations.</p>
+
+</body>
+</html>

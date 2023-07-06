@@ -170,6 +170,15 @@ def align_images(query, train):
     return query, train
 
 
+
+def rescale(image):
+    min_val = np.min(image)
+    max_val = np.max(image)
+    rescaled_image = (image - min_val) * (255.0 / (max_val - min_val))
+    rescaled_image = rescaled_image.astype(np.uint8)
+    return rescaled_image
+
+
 def test():
     print('Running DataProcessing tests...')
     sampling_grid = grid_out_image(cv2.imread('images/fail3.jpg'), 3, 2)
