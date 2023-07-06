@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.decomposition import FastICA
+from skimage import segmentation
 import matplotlib.pyplot as plt
 import cv2
 import DataProcessing
