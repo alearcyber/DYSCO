@@ -296,6 +296,16 @@ def ontosomethinghere():
     cv2.waitKey()
 
 
+def fourier_test():
+    img = cv2.imread('images/fail3.jpg', cv2.IMREAD_GRAYSCALE)
+    f = np.fft.fft2(img)
+    fshift = np.fft.fftshift(f)
+    magnitude_spectrum = 20 * np.log(np.abs(fshift))
+    plt.subplot(121), plt.imshow(img, cmap='gray')
+    plt.title('Input Image'), plt.xticks([]), plt.yticks([])
+    plt.subplot(122), plt.imshow(magnitude_spectrum, cmap='gray')
+    plt.title('Magnitude Spectrum'), plt.xticks([]), plt.yticks([])
+    plt.show()
 
 
 if __name__ == '__main__':
@@ -306,7 +316,8 @@ if __name__ == '__main__':
     #first_cluster_attempt(gray=True)
     #test_macro_feature_extraction()
     #average_all_bands()
-    ontosomethinghere()
+    #ontosomethinghere()
+    fourier_test()
 
 
 
