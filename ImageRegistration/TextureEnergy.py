@@ -296,6 +296,20 @@ def ontosomethinghere():
     cv2.waitKey()
 
 
+def check_with_new_preprocessing_method():
+    image = cv2.imread('images/fail3.jpg', cv2.IMREAD_GRAYSCALE)
+    image = cv2.medianBlur(image, 9)
+    #image = remove_illumination(image)
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(10, 10))
+    X = generate_texture_features(image)
+    for i in range(X.shape[2]):
+        x = X[:, :, i]
+        DataProcessing.show(x, title=f'Band{i + 1}, median blur')
+        #cl1 = clahe.apply(x)
+        #DataProcessing.show(cl1, title=f'Band{i + 1}, equalized')
+
+
+
 def fourier_test():
     img = cv2.imread('images/fail3.jpg', cv2.IMREAD_GRAYSCALE)
     f = np.fft.fft2(img)
@@ -308,6 +322,8 @@ def fourier_test():
     plt.show()
 
 
+
+
 if __name__ == '__main__':
     """entry point"""
     #pca_variance_test()
@@ -317,7 +333,8 @@ if __name__ == '__main__':
     #test_macro_feature_extraction()
     #average_all_bands()
     #ontosomethinghere()
-    fourier_test()
+    #fourier_test()
+    check_with_new_preprocessing_method()
 
 
 

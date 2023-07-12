@@ -53,6 +53,11 @@ def combine_expected():
     #import and align the images
     query = cv2.imread('images/fail3.jpg')
     train = cv2.imread("images/dash4.jpg")
+
+    #median blur
+    query = cv2.medianBlur(query, 9)
+    train = cv2.medianBlur(train, 9)
+
     train, query = DataProcessing.align_images(train, query)
     print(f'train shape:{train.shape}, query shape:{query.shape}')
 

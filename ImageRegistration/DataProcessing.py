@@ -171,6 +171,15 @@ def align_images(query, train):
 
 
 
+
+#show an image
+#shows an image
+def show(image, title=None):
+    plt.imshow(image, cmap='gray', interpolation='none', extent=[0, image.shape[1], image.shape[0], 0])
+    if not (title is None):
+        plt.title(title)
+    plt.show()
+
 def rescale(image):
     min_val = np.min(image)
     max_val = np.max(image)
