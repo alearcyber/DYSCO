@@ -78,6 +78,22 @@ texture_kernels = [ # list of 2-tuples: ('name', kernel)
 ]
 
 
+#Filtered down texture kernels
+#epsilon is added for division avoidance for division by zero
+epsilon = 1e-8
+energy_maps = [
+    ('L5E5/E5L5', np.round(le / (el + epsilon), decimals=2)),
+    ('L5R5/R5L5', lr // rl),
+    ('E5S5/S5E5', np.round(es / (se + epsilon), decimals=2)),
+    ('S5S5', ss),
+    ('R5R5', rr),
+    ('L5S5/S5L5', np.round(ls / (sl + epsilon), decimals=2)),
+    ('E5E5', ee),
+    ('E5R5/R5E5', np.round(er / (re + epsilon), decimals=2)),
+    ('S5R5/R5S5', np.round(sr / (rs + epsilon), decimals=2))
+]
+
+
 
 #shows an image
 def show(image, title=None):
@@ -159,6 +175,33 @@ def generate_texture_features_example(img):
         #print('shape:', out.shape)
         cv2.imwrite("TestResults/TextureMaskExamples/" + descriptor + ".png", out)  #this line saves the masks
         show(out, descriptor)
+
+
+
+#Applies the 9 texture maps to the image, works for rgb and
+def texture_features9(img):
+    out = np.empty(shape=(img.shape[0], img.shape[1], 0), dtype='uint8')
+    for name, map in energy_maps:
+        layer = cv2.filter2D(img, ddepth=-1, kernel=map)
+        if img.shape == 2: #for grayscale images
+            layer = np.expand_dims(layer, axis=2)
+        out = np.concatenate((out, layer), axis=2)
+    return out
+
+
+#applies 9 texture maps to image.
+#converts image to grayscale if it is not already
+#returns dictionary where key is energy map name and value is the image
+def texture_features9_2(img):
+    assert len(img.shape) == 2, "Must be grayscale image"
+    out = dict()
+    for descriptor, kernel in energy_maps:
+        layer = cv2.filter2D(img, ddepth=-1, kernel=kernel)
+        out[descriptor] = layer
+    return out
+
+
+
 
 
 
@@ -296,6 +339,8 @@ def ontosomethinghere():
     cv2.waitKey()
 
 
+
+
 def check_with_new_preprocessing_method():
     image = cv2.imread('images/fail3.jpg', cv2.IMREAD_GRAYSCALE)
     image = cv2.medianBlur(image, 9)
@@ -334,7 +379,14 @@ if __name__ == '__main__':
     #average_all_bands()
     #ontosomethinghere()
     #fourier_test()
-    check_with_new_preprocessing_method()
+    #check_with_new_preprocessing_method()
+    composite = texture_features9_2(cv2.imread("images/fail3.jpg", cv2.IMREAD_GRAYSCALE))
+    for key in composite:
+        name = key.replace(r'/', r'-')
+        pic = composite[key]
+        cv2.imwrite(f'/Users/aidanlear/PycharmProjects/CVResearch/ImageRegistration/TestResults/TextureEnergy2/{name}.png', pic)
+        print(name, composite[key].shape)
+
 
 
 
