@@ -6,6 +6,10 @@ import numpy as np
 import DataProcessing
 from matplotlib import pyplot as plt
 
+from skimage import data
+from skimage import exposure
+from skimage.exposure import match_histograms
+
 
 
 #convert BGR numpy array to grayscale
@@ -46,12 +50,7 @@ def global_centering(image):
 
 
 
-
-i = cv2.imread('images/fail3.jpg', cv2.IMREAD_GRAYSCALE)
-out = local_contrast_norm(i)
-cv2.imshow('norm', out)
-cv2.waitKey()
-DataProcessing.show(out)
-global_centering(out)
+def match_histogram(image):
+    return
 
 

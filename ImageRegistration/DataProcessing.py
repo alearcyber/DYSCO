@@ -188,6 +188,23 @@ def rescale(image):
     return rescaled_image
 
 
+
+
+#calculate the chi-squared distance
+def chi_squared_distance(a, b):
+    chi = 0.5 * np.sum([((a - b) ** 2) / (a + b) for (a, b) in zip(a, b)])
+    return chi
+
+
+
+#makes numpy array percentages along the given axis
+def convert_to_percent(array, axis):
+    s = np.sum(array, axis)
+    cumulation = np.array([s for _ in range(array.shape[axis])])
+    percents = (array / cumulation) * 100
+    return percents
+
+
 def test():
     print('Running DataProcessing tests...')
     sampling_grid = grid_out_image(cv2.imread('images/fail3.jpg'), 3, 2)
@@ -196,5 +213,35 @@ def test():
             cv2.imshow(f'row:{row}, col:{col}', sampling_grid[row][col])
     cv2.waitKey()
 
+def test2():
+    raw = cv2.imread("images/rawdisplay.png")
+    cap = cv2.imread("images/displayoutput.png")
+
+    one, two = align_images(raw, cap)
+    cv2.imshow('one', one)
+    cv2.imshow('two', two)
+
+
+    composite = np.concatenate([one, two], axis=2)
+    composite = np.mean(composite, axis=2).astype(np.uint8)
+    cv2.imshow('composite', composite)
+
+    cv2.waitKey()
+
+    folder = "/Users/aidanlear/Desktop/"
+    cv2.imwrite(folder + "one.png", one)
+    cv2.imwrite(folder + "two.png", two)
+    cv2.imwrite(folder + "composite.png", composite)
+
+def test_chi2_dist():
+    one = np.array([1, 2, 13, 5, 45, 23])
+    two = np.array([67, 90, 18, 79, 24, 98])
+    results = chi_squared_distance(one, two)
+    print("chi squared distance:", results)
+
+
+
+
+
 if __name__ == '__main__':
-    test()
+    test_chi2_dist()

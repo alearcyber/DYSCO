@@ -20,6 +20,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.cluster import KMeans
 from DataProcessing import plot_pca_variance
+from scipy import stats
 
 
 #seed for random states
@@ -205,6 +206,7 @@ def texture_features9_2(img):
 
 
 
+
 #will analyze the variance accounted for by the first n principle components for an example image
 def pca_variance_test():
     #create the texture features
@@ -317,6 +319,28 @@ def average_all_bands():
     cv2.waitKey()
 
 
+
+#takes a grayscale image as input
+#returns a dataframe with the macro-statistics
+def create_stats_dataframe(image, blur=False):
+    window_texture = texture_features9_2(image)
+    rows = []
+    for key in window_texture:
+        texture_map = window_texture[key]
+        if blur:
+            texture_map = cv2.blur(texture_map, (15, 15))
+        mean = round(np.mean(texture_map), 2)
+        std = round(np.std(texture_map), 2)
+        flat = texture_map.ravel()
+        skewness = round(stats.skew(flat, nan_policy='omit'), 2)
+        kurtosis = round(stats.kurtosis(flat, nan_policy='omit'), 2)
+        entropy = round(stats.entropy(flat), 2)
+        rows.append([key, mean, std, skewness, kurtosis, entropy])
+
+    data = pd.DataFrame(rows, columns=['texture', 'mean', 'std', 'skewness', 'kurtosis', 'entropy'])
+    return data
+
+
 #TODO - make this function more descriptive in name.
 # it is a pixelwise comparison of the composite texture images.
 def ontosomethinghere():
@@ -367,6 +391,27 @@ def fourier_test():
     plt.show()
 
 
+    cv2.imshow('one', img)
+    cv2.imshow('two', magnitude_spectrum)
+    cv2.waitKey()
+
+
+def examples_for_jh():
+    screenshot = cv2.imread("/Users/aidanlear/Desktop/preprocessing email/screenshot.png", cv2.IMREAD_GRAYSCALE)
+    picture = cv2.imread("/Users/aidanlear/Desktop/preprocessing email/picture.png", cv2.IMREAD_GRAYSCALE)
+
+    screenshot_textures = texture_features9_2(screenshot)
+    picture_textures = texture_features9_2(picture)
+
+
+    for key in screenshot_textures:
+        name = key.replace(r'/', '-')
+        print(name)
+        #cv2.imwrite(f'images/examples-for-jh/picture-textures/{name}.png', picture_textures[key] )
+        #cv2.imwrite(f'images/examples-for-jh/screenshot-textures/{name}.png', screenshot_textures[key] )
+
+
+
 
 
 if __name__ == '__main__':
@@ -378,14 +423,9 @@ if __name__ == '__main__':
     #test_macro_feature_extraction()
     #average_all_bands()
     #ontosomethinghere()
-    #fourier_test()
+    fourier_test()
     #check_with_new_preprocessing_method()
-    composite = texture_features9_2(cv2.imread("images/fail3.jpg", cv2.IMREAD_GRAYSCALE))
-    for key in composite:
-        name = key.replace(r'/', r'-')
-        pic = composite[key]
-        cv2.imwrite(f'/Users/aidanlear/PycharmProjects/CVResearch/ImageRegistration/TestResults/TextureEnergy2/{name}.png', pic)
-        print(name, composite[key].shape)
+    #examples_for_jh()
 
 
 
