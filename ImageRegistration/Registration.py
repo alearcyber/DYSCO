@@ -8,69 +8,13 @@ import cv2
 import numpy as np
 
 
-#helper function to extend grayscale images
-def _extend_image_grayscale(a, b):
-    # extend height
-    dx = a.shape[0] - b.shape[0]
-    if dx > 0:  # a is bigger, extend b
-        new_pixels = np.zeros((abs(dx), b.shape[1]), dtype='uint8')
-        b = np.concatenate((b, new_pixels), axis=0)
-    elif dx < 0:  # b is bigger, extend a
-        new_pixels = np.zeros((abs(dx), a.shape[1]), dtype='uint8')
-        a = np.concatenate((a, new_pixels), axis=0)
-
-    # extend width
-    dy = a.shape[1] - b.shape[1]
-    if dy > 0:  # a is bigger, extend b
-        new_pixels = np.zeros((b.shape[0], abs(dy)), dtype='uint8')
-        b = np.concatenate((b, new_pixels), axis=1)
-    elif dy < 0:  # b is bigger, extend a
-        new_pixels = np.zeros((a.shape[0], abs(dy)), dtype='uint8')
-        a = np.concatenate((a, new_pixels), axis=1)
-
-    # return output
-    return a, b
 
 
-
-#extend image bounds with blank pixels so they match.
-def _extend_image(a, b):
-    #check if the image is grayscale
-    if len(a.shape) == 2:
-        return _extend_image_grayscale(a, b)
-
-
-    #extend height
-    dx = a.shape[0] - b.shape[0]
-    if dx > 0: #a is bigger, extend b
-        new_pixels = np.zeros((abs(dx), b.shape[1], 3), dtype='uint8')
-        b = np.concatenate((b, new_pixels), axis=0)
-    elif dx < 0: #b is bigger, extend a
-        new_pixels = np.zeros((abs(dx), a.shape[1], 3), dtype='uint8')
-        a = np.concatenate((a, new_pixels), axis=0)
-
-    #extend width
-    dy = a.shape[1] - b.shape[1]
-    if dy > 0:  # a is bigger, extend b
-        new_pixels = np.zeros((b.shape[0], abs(dy), 3), dtype='uint8')
-        b = np.concatenate((b, new_pixels), axis=1)
-    elif dy < 0:  # b is bigger, extend a
-        new_pixels = np.zeros((a.shape[0], abs(dy), 3), dtype='uint8')
-        a = np.concatenate((a, new_pixels), axis=1)
-
-    #return output
-    return a, b
-
-
-
-#Aligns query image with the train image based on their features and estimating the affine transformation.
-#Returns a copy of the query image and the train image. This is because both images may be given padding so they
-# have the same dimensions.
+#aligns observed with expected.
+#returns a copy of observed aligned with expected.
+#Dimension of result are equal to that of expected.
 #Note: Does not currently consider the accuracy/strength of the matches.
 def align_images(observed, expected):
-    # extend bounds of images
-    #query, train = _extend_image(query, train)
-
     #resize observed to match expected
     #inter_area to make smaller
     #bicubic to make bigger
@@ -111,12 +55,10 @@ def test1():
     cv2.imshow('original observed', observed)
 
     observed = align_images(observed, expected)
-    cv2.imshow('scaled obserevd', observed)
+    cv2.imshow('scaled observed', observed)
     print('expected shape:', expected.shape)
     print('observed shape:', observed.shape)
-    #uno = expected[:, :, np.newaxis].shape
-    #dos = observed[:, :, np.newaxis].shape
-    #cv2.imshow('composite', np.concatenate((uno, dos), axis=2))
+
     composite = np.stack((observed, expected), axis=-1)
     cv2.imshow('composite', composite.mean(axis=2).astype(np.uint8))
     cv2.waitKey()
