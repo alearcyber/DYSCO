@@ -30,6 +30,7 @@ class Filter:
     #set the title
     def title(self, title):
         self.title = title
+        
 
 
 
