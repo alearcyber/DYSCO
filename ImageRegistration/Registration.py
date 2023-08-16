@@ -63,9 +63,27 @@ def test1():
     cv2.imshow('composite', composite.mean(axis=2).astype(np.uint8))
     cv2.waitKey()
 
+def test2():
+    expected = cv2.imread('/Users/aidanlear/PycharmProjects/CVResearch/ImageRegistration/images/screenshot1.png')
+    observed = cv2.imread('/Users/aidanlear/PycharmProjects/CVResearch/ImageRegistration/images/fail6.jpg')
+
+    cv2.imshow('expected', expected)
+    cv2.imshow('original observed', observed)
+
+    observed = align_images(observed, expected)
+    cv2.imshow('scaled observed', observed)
+    print('expected shape:', expected.shape)
+    print('observed shape:', observed.shape)
+    cv2.imwrite("/Users/aidanlear/PycharmProjects/CVResearch/ImageRegistration/images/picture3.png", observed)
+    #composite = np.stack((observed, expected), axis=-1)
+    #c_mean = composite.mean(axis=2).astype(np.uint8)
+    #cv2.imshow('composite', c_mean)
+    cv2.waitKey()
+
+
 
 
 if __name__ == '__main__':
     """entry point"""
-    test1()
+    test2()
 

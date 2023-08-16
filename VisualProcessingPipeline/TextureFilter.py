@@ -69,11 +69,18 @@ class TextureFilter(Filter):
         ('S5R5/R5S5', np.round(sr / (rs + epsilon), decimals=2))
     ]
 
-    def __init__(self, expected, observed, title=None):
-        super().__init__(expected, observed, texture_features, title=title)
+    def __init__(self, expected, observed):
+        super().__init__(expected, observed, texture_features)
 
 
+    def get_expected_composite(self):
+        return np.mean(self.e_filtered, axis=2).astype(np.uint8)
 
+    def get_observed_composite(self):
+        return np.mean(self.o_filtered, axis=2).astype(np.uint8)
+
+
+#static function, it doesn't really need access to the information in the class
 #grabs the 9 adjusted grayscale texture features
 def texture_features(img):
     if len(img.shape) > 2:

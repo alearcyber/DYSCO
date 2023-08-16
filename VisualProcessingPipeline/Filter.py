@@ -6,14 +6,14 @@ filter function requirements -> I think I can just take a numpy array as input a
 import cv2
 
 class Filter:
-    def __init__(self, expected, observed, func, title=None):
+    def __init__(self, expected, observed, func):
         #class fields
         self.e = expected  #expected image
         self.o = observed   #observed image
         self.e_filtered = None  #expected image after filtering
         self.o_filtered = None  #observed image after filtering
         self.filter_function = func  #function used to apply the filter
-        self.title = title  #string describing what was done
+        self.title = ""  #string describing what was done
 
 
         #setup the object

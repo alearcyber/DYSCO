@@ -12,7 +12,7 @@ class BlurFilter(Filter):
     BILATERAL = 4
 
 
-    def __init__(self, expected, observed, method, k_size, title=None, sigma_x=None, sigma_y=None, border_type=cv2.BORDER_DEFAULT):
+    def __init__(self, expected, observed, method, k_size, sigma_x=None, sigma_y=None, border_type=cv2.BORDER_DEFAULT):
         self.method = method
         self.k_size = k_size
         self.sigma_x = sigma_x
@@ -23,7 +23,7 @@ class BlurFilter(Filter):
         blur_function = self._select_blur_method(method)
 
         #super constructor
-        super().__init__(expected, observed, blur_function, title=title)
+        super().__init__(expected, observed, blur_function)
 
 
     #used in the higher order function apply_filter
@@ -59,7 +59,5 @@ class BlurFilter(Filter):
             return self.bilateral_filter
         else: # default
             return self.mean_blur
-
-
 
 
