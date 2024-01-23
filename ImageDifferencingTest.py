@@ -8,6 +8,8 @@ of the display.
 
 import cv2
 import numpy as np
+from sklearn.cluster import KMeans
+from Verify import *
 
 
 def downsample(img, rows, cols):
@@ -28,7 +30,31 @@ def chi_squared(A, B):
     chi = 0.5 * np.sum([((A - B) ** 2) / (A + B) for (A, B) in zip(A, B)])
     return chi
 
-def experiment():
+
+
+def convert_bin_to_bool(array):
+    """
+    Converts a 2d numpy array whose entries are only either 1 or 0 to a boolean array of the same dimensions.
+    Instead of simply converting 1 to True and 0 to False, If 1s appear less often than 0s, the 1s become False
+    and 0s become True.
+
+
+    TODO - REWRITE THIS so that the custer corresponding to the highest cendroid is made false, i.e. obstructed
+    """
+    # Count the occurrences of 1s and 0s
+    ones_count = np.count_nonzero(array)
+    zeros_count = array.size - ones_count
+
+    # Convert the array based on the frequency of 1s and 0s
+    if ones_count < zeros_count:
+        # Invert the values if 1s are less frequent
+        return array == 0
+    else:
+        # Direct conversion otherwise
+        return array == 1
+
+
+def experiment(out_dir=None):
     """
     This function is the main routine for running the experiment itself.
     """
@@ -58,31 +84,49 @@ def experiment():
         i += 1
         #original shape
         original_shape = test['observed'].shape
-        print('original shape:', original_shape)
-        print('original shape:', original_shape)
+
 
         #downsample observed and expected for comparison
         observed_downsampled = cv2.resize(test['observed'], (cols, rows), interpolation=cv2.INTER_AREA)
         expected_downsampled = cv2.resize(test['expected'], (cols, rows), interpolation=cv2.INTER_AREA)
-        print('expected downsampled dtype:', expected_downsampled.dtype)
 
-        cv2.imshow('observed', cv2.resize(observed_downsampled, (original_shape[1], original_shape[0]), interpolation=cv2.INTER_NEAREST_EXACT))
-        cv2.imshow('expected', cv2.resize(expected_downsampled, (original_shape[1], original_shape[0]), interpolation=cv2.INTER_NEAREST_EXACT))
 
         #take difference between the two images
         difference = np.absolute(observed_downsampled.astype(int) - expected_downsampled.astype(int))
-        print('diff dtype:', difference.dtype)
 
+
+
+        """
         #this next set of lines is for visualizing the difference
         bloom_difference = cv2.resize(difference, (original_shape[1], original_shape[0]), interpolation=cv2.INTER_NEAREST_EXACT)
-
+        cv2.imshow('observed', cv2.resize(observed_downsampled, (original_shape[1], original_shape[0]), interpolation=cv2.INTER_NEAREST_EXACT))
+        cv2.imshow('expected', cv2.resize(expected_downsampled, (original_shape[1], original_shape[0]), interpolation=cv2.INTER_NEAREST_EXACT))
         cv2.imshow(f'Difference {i}', bloom_difference.astype('uint8'))
         cv2.waitKey()
-        cv2.destroyWindow("observed")
-        cv2.destroyWindow("expected")
-        cv2.destroyWindow("expected")
-        cv2.destroyWindow(f'Difference {i}')
+        cv2.destroyAllWindows()
+        """
 
+
+        #Cluster the outcome
+        flat = difference.reshape(-1, difference.shape[2]) # flattened image first
+        kmeans = KMeans(n_clusters=2, random_state=0, n_init="auto").fit(flat)
+        print('labels:', kmeans.labels_)
+        reshaped_labels = kmeans.labels_.reshape(rows, cols)
+        print('----rehaped labels----\n', reshaped_labels)
+
+
+        prediction_matrix = convert_bin_to_bool(reshaped_labels).tolist() #2d bool list of the prediction
+        visualized_prediction = visualize_region_matrix(test['observed'], prediction_matrix) #visualized results
+
+        #Should the image be saved or displayed
+        if out_dir is None: #display it
+            cv2.imshow(f'Prediction {i}', visualized_prediction)
+            cv2.waitKey()
+            cv2.destroyAllWindows()
+        else: #save it
+            if not (out_dir.endswith('/')):
+                out_dir.append('/')
+            cv2.imwrite(f'{out_dir}Test{i}.png', visualized_prediction)
 
 
 
@@ -100,5 +144,25 @@ def test_downsampling():
     cv2.waitKey()
 
 
+
+def main():
+    """
+    """
+    #Get save location from user
+    save_folder = input("Input the local directory where you want the results to be saved, "
+                        "or leave blank to show results 1-by-1 with opencv:")
+
+    #Run experiment
+    if len(save_folder) < 2: #dont save, show with opencv
+        experiment()
+    else: #Save to output folder
+        experiment(out_dir=save_folder)
+
+    #Let user know experiment is done
+    print('Done!')
+
+
+
+
 if __name__ == "__main__":
-    experiment()
+    main()
