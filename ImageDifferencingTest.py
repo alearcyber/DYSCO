@@ -39,7 +39,7 @@ def convert_bin_to_bool(array):
     and 0s become True.
 
 
-    TODO - REWRITE THIS so that the custer corresponding to the highest cendroid is made false, i.e. obstructed
+    TODO - REWRITE THIS so that the custer corresponding to the highest centroid is made false, i.e. obstructed
     """
     # Count the occurrences of 1s and 0s
     ones_count = np.count_nonzero(array)
@@ -111,11 +111,25 @@ def experiment(out_dir=None):
         flat = difference.reshape(-1, difference.shape[2]) # flattened image first
         kmeans = KMeans(n_clusters=2, random_state=0, n_init="auto").fit(flat)
         print('labels:', kmeans.labels_)
+        print('Cluster centers:', kmeans.cluster_centers_)
         reshaped_labels = kmeans.labels_.reshape(rows, cols)
-        print('----rehaped labels----\n', reshaped_labels)
+        print('----reshaped labels----\n', reshaped_labels)
 
 
-        prediction_matrix = convert_bin_to_bool(reshaped_labels).tolist() #2d bool list of the prediction
+
+        #figure out which cluster center is the highest so I know which area is the
+        #obstructed area, and which is unobstructed. The highest centroid is the obstructed area.
+        if np.linalg.norm(kmeans.cluster_centers_[0, :]) > np.linalg.norm(kmeans.cluster_centers_[1, :]):
+            #the 0th centroid is bigger
+            prediction_matrix = (reshaped_labels == 1).tolist()
+        else:
+            #the first centroid is bigger
+            prediction_matrix = (reshaped_labels == 0).tolist()
+
+
+
+
+        #prediction_matrix = convert_bin_to_bool(reshaped_labels).tolist() #2d bool list of the prediction
         visualized_prediction = visualize_region_matrix(test['observed'], prediction_matrix) #visualized results
 
         #Should the image be saved or displayed
@@ -127,6 +141,7 @@ def experiment(out_dir=None):
             if not (out_dir.endswith('/')):
                 out_dir.append('/')
             cv2.imwrite(f'{out_dir}Test{i}.png', visualized_prediction)
+
 
 
 
