@@ -43,7 +43,7 @@ def sobel_example():
 
     #make original and blurred version of image
     x = cv2.cvtColor(test_image, cv2.COLOR_BGR2GRAY)
-    xb = cv2.bilateralFilter(x, 3, 75, 75)
+    xb = cv2.bilateralFilter(x, 7, 75, 75)
 
     # Sobel original
     sobelx = cv2.Sobel(src=x, ddepth=cv2.CV_64F, dx=1, dy=0, ksize=5)  # Sobel Edge Detection on the X axis
@@ -149,7 +149,6 @@ def test1():
         cv2.imshow(f'Prediction {i}', visualized_prediction)
         cv2.waitKey()
         cv2.destroyAllWindows()
-        cv2.imwrite(f'Results/ImageDifferencingEdge-test1/Test{i}.png', visualized_prediction)
 
 
 
@@ -168,10 +167,35 @@ def main():
               "\n\t2) ...." \
               "\n\t3) ...." \
               "\n\t4) ...." \
-              "\n\t5) ...." \
+              "\n\t9) One of the example functions." \
               "\nWhich test would you like to run?:" \
 
     test_choice = int(input(options))
+
+
+
+    #case for one of the example functions
+    if test_choice == 9:
+        options = "Example Options:\n" \
+                  "\t1) Bilateral Blur" \
+                  "\n\t2) Bilateral Canny" \
+                  "\n\t3) Sobel" \
+                  "\n\t4) ...." \
+                  "\nWhich example would you like to run?:"
+        example_choice = int(input(options))
+
+        #choose case
+        if example_choice == 1:
+            bilateral_blur_example()
+        elif example_choice == 2:
+            bilateral_canny_example()
+        elif example_choice == 3:
+            sobel_example()
+
+    if test_choice == 1:
+        test1()
+
+
 
     print("YOU CHOSE:", test_choice)
 
@@ -182,8 +206,7 @@ def main():
 
 
 if __name__ == "__main__":
-    #main()
-    sobel_example()
+    main()
 
 
 
