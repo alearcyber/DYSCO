@@ -37,6 +37,37 @@ def bilateral_canny_example():
         cv2.waitKey()
         cv2.destroyAllWindows()
 
+def sobel_example():
+    #read in a test image
+    test_image = cv2.imread("Data/TestSet1/test1/cam-low-exposure.png")
+
+    #make original and blurred version of image
+    x = cv2.cvtColor(test_image, cv2.COLOR_BGR2GRAY)
+    xb = cv2.bilateralFilter(x, 3, 75, 75)
+
+    # Sobel original
+    sobelx = cv2.Sobel(src=x, ddepth=cv2.CV_64F, dx=1, dy=0, ksize=5)  # Sobel Edge Detection on the X axis
+    sobely = cv2.Sobel(src=x, ddepth=cv2.CV_64F, dx=0, dy=1, ksize=5)  # Sobel Edge Detection on the Y axis
+    sobelxy = cv2.Sobel(src=x, ddepth=cv2.CV_64F, dx=1, dy=1, ksize=5)  # Combined X and Y Sobel Edge Detection
+
+    # sobel blurred
+    sobelx_b = cv2.Sobel(src=xb, ddepth=cv2.CV_64F, dx=1, dy=0, ksize=5)  # Sobel Edge Detection on the X axis
+    sobely_b = cv2.Sobel(src=xb, ddepth=cv2.CV_64F, dx=0, dy=1, ksize=5)  # Sobel Edge Detection on the Y axis
+    sobelxy_b = cv2.Sobel(src=xb, ddepth=cv2.CV_64F, dx=1, dy=1, ksize=5)  # Combined X and Y Sobel Edge Detection
+
+    #show images
+    cv2.imshow("original", test_image)
+    cv2.imshow('sobel x', sobelx)
+    cv2.imshow('sobel y', sobely)
+    cv2.imshow('sobel xy', sobelxy)
+    cv2.imshow('sobel x blurred',  sobelx_b)
+    cv2.imshow('sobel y blurred', sobely_b)
+    cv2.imshow('sobel xy blurred', sobelxy_b)
+    cv2.waitKey()
+    cv2.destroyAllWindows()
+
+
+
 
 def test1():
     """
@@ -124,13 +155,35 @@ def test1():
 
 
 
+def test2():
+    pass
+
+
+
+
+
+def main():
+    options = "Test Options:\n" \
+              "\t1) grayscale image, 3x3 bilateral filter(blur), canny edge, 10 row x 20 col downsample, difference between observed and expected, k-means cluster." \
+              "\n\t2) ...." \
+              "\n\t3) ...." \
+              "\n\t4) ...." \
+              "\n\t5) ...." \
+              "\nWhich test would you like to run?:" \
+
+    test_choice = int(input(options))
+
+    print("YOU CHOSE:", test_choice)
+
+
 
 
 
 
 
 if __name__ == "__main__":
-    test1()
+    #main()
+    sobel_example()
 
 
 
