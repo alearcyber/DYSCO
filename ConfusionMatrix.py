@@ -69,6 +69,36 @@ class ConfusionMatrix:
 
 
 
+def combine(c1: ConfusionMatrix, c2: ConfusionMatrix):
+    """
+    :param c1 & c2: The ConfusionMatrix objects to be combined.
+    :return: A single ConfusionMatrix with the data combined.
+    """
+    out = ConfusionMatrix()
+    out.tp = c1.tp + c2.tp
+    out.fp = c1.fp + c2.fp
+    out.tn = c1.tn + c2.tn
+    out.fn = c1.fn + c2.fn
+    return out
+
+
+def combine_list(c_list):
+    """
+    Functions the same as combine(...), but can take a list of ConfusionMatrix objects as input.
+    :param c_list: list of ConfusionMatrix objects.
+    :return: A single ConfusionMatrix of the combined data from entire list
+    """
+    out = ConfusionMatrix()
+    for c in c_list:
+        out.tp += c.tp
+        out.fp += c.fp
+        out.tn += c.tn
+        out.fn += c.fn
+    return out
+
+
+
+
 def test1():
     """
     This is a simple test for the confusion matrix object

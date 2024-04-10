@@ -1,0 +1,142 @@
+<mxfile host="app.diagrams.net" modified="2024-03-07T19:22:01.982Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:120.0) Gecko/20100101 Firefox/120.0" etag="xrVP-BSphx6j5CoQShvV" version="23.1.5" type="device">
+  <diagram name="Page-1" id="hLoIuNdqNXHK0nv49yDD">
+    <mxGraphModel dx="1306" dy="862" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="tsd6rebk2KoI1GUDASzy-2" value="test1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.folder;" vertex="1" parent="1">
+          <mxGeometry x="303" y="284" width="43.94" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-3" value="Root" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.folder;" vertex="1" parent="1">
+          <mxGeometry x="187" y="218" width="43.94" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-8" value="test2" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.folder;" vertex="1" parent="1">
+          <mxGeometry x="303" y="360" width="43.94" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-10" value="testID" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.folder;" vertex="1" parent="1">
+          <mxGeometry x="303" y="484" width="43.94" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-13" value="" style="endArrow=none;dashed=1;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="325" y="475" as="sourcePoint" />
+            <mxPoint x="325" y="429" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-14" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="213" y="507" as="sourcePoint" />
+            <mxPoint x="211" y="283" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-15" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="212" y="309" as="sourcePoint" />
+            <mxPoint x="295" y="308.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-16" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="212" y="382.5" as="sourcePoint" />
+            <mxPoint x="295" y="382" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-17" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="212" y="500.5" as="sourcePoint" />
+            <mxPoint x="295" y="500" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-18" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="374" y="481" width="111" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-7" value="gt" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=9;" vertex="1" parent="1">
+          <mxGeometry x="436.5" y="543.5" width="30" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-19" value="ob" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=9;" vertex="1" parent="1">
+          <mxGeometry x="436.5" y="495.5" width="30" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-20" value="ov" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=9;" vertex="1" parent="1">
+          <mxGeometry x="394.5" y="543.5" width="30" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-21" value="e" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=9;" vertex="1" parent="1">
+          <mxGeometry x="394.5" y="495.5" width="30" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-22" value="File Naming" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="547" y="169" width="234" height="244" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-23" value="e -&amp;gt; expected.png, a screenshot of the (ex)pected output with no obstructions." style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="tsd6rebk2KoI1GUDASzy-22">
+          <mxGeometry y="30" width="234" height="49" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-24" value="ob -&amp;gt; observed.png, (ob)served picture of the obstructed display.." style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="tsd6rebk2KoI1GUDASzy-22">
+          <mxGeometry y="79" width="234" height="39" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-25" value="ov -&amp;gt; obstructed.png, a screenshot of the expected display with the obstruction superimposed, ie (ov)erlayed." style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="tsd6rebk2KoI1GUDASzy-22">
+          <mxGeometry y="118" width="234" height="63" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-28" value="&lt;div&gt;gt -&amp;gt; obstructionmask.png, a binary mask of the ground truth (gt) of where the obstruction lies&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="tsd6rebk2KoI1GUDASzy-22">
+          <mxGeometry y="181" width="234" height="63" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-29" value="&lt;h1&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;Notes&lt;/font&gt;&lt;/h1&gt;&lt;p&gt;- Each folder within Root represents one test&lt;/p&gt;&lt;p&gt;- The test folders can be called anything, but a unique trailing integer is required for identifying tests.&lt;/p&gt;&lt;p&gt;- Files can be of any format readable by OpenCV&#39;s imread, but they must follow the naming convention&lt;/p&gt;&lt;p&gt;- All the images must &lt;i&gt;ALREADY BE REGISTERED&lt;/i&gt;&lt;br&gt;&lt;/p&gt;" style="text;html=1;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="522" y="428" width="304" height="204" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-36" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="373" y="359" width="111" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-31" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="tsd6rebk2KoI1GUDASzy-36">
+          <mxGeometry width="111" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-32" value="gt" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=9;" vertex="1" parent="tsd6rebk2KoI1GUDASzy-36">
+          <mxGeometry x="62.5" y="62.5" width="30" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-33" value="ob" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=9;" vertex="1" parent="tsd6rebk2KoI1GUDASzy-36">
+          <mxGeometry x="62.5" y="14.5" width="30" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-34" value="ov" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=9;" vertex="1" parent="tsd6rebk2KoI1GUDASzy-36">
+          <mxGeometry x="20.5" y="62.5" width="30" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-35" value="e" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=9;" vertex="1" parent="tsd6rebk2KoI1GUDASzy-36">
+          <mxGeometry x="20.5" y="14.5" width="30" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-37" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="373" y="236" width="111" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-38" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="tsd6rebk2KoI1GUDASzy-37">
+          <mxGeometry width="111" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-39" value="gt" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=9;" vertex="1" parent="tsd6rebk2KoI1GUDASzy-37">
+          <mxGeometry x="62.5" y="62.5" width="30" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-40" value="ob" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=9;" vertex="1" parent="tsd6rebk2KoI1GUDASzy-37">
+          <mxGeometry x="62.5" y="14.5" width="30" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-41" value="ov" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=9;" vertex="1" parent="tsd6rebk2KoI1GUDASzy-37">
+          <mxGeometry x="20.5" y="62.5" width="30" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-42" value="e" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=9;" vertex="1" parent="tsd6rebk2KoI1GUDASzy-37">
+          <mxGeometry x="20.5" y="14.5" width="30" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-43" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="348" y="509" as="sourcePoint" />
+            <mxPoint x="373" y="509" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-44" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="349" y="384" as="sourcePoint" />
+            <mxPoint x="374" y="384" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-45" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="348" y="308" as="sourcePoint" />
+            <mxPoint x="373" y="308" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tsd6rebk2KoI1GUDASzy-46" value="&lt;h1&gt;Test Set File Structure&lt;br&gt;&lt;/h1&gt;" style="text;html=1;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="245" y="148" width="279" height="73" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

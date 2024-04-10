@@ -66,6 +66,8 @@ def create_gt_array(gt, n_rows, n_cols, threshold=0.95):
 
 
 
+
+
 def partition_image(img, n_rows, n_cols):
     """
     Splits the image up into a rectilinear grid of sub-images.

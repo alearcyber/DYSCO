@@ -265,7 +265,7 @@ def test_the_whole_shebang(iters):
 
 
 def main():
-    test_the_whole_shebang(20)
+    test_the_whole_shebang(30)
 
 
 if __name__ == "__main__":
