@@ -85,30 +85,52 @@ def align_images(observed, expected):
 #print("len matches:", len(matches))
 #print("Type of elements in matches:", type(matches[0][0]))
 
+def align_images_example():
+    observed2 = cv2.imread("/Users/aidan/Desktop/TBP-observed2.png")
+    observed1 = cv2.imread("/Users/aidan/Desktop/TBP-observed1.png")
+    expected = cv2.imread("/Users/aidan/Desktop/TBP-expected.png")
+
+    out1 = align_images(observed1, expected)
+    out2 = align_images(observed2, expected)
+
+
+    cv2.imwrite("/Users/aidan/Desktop/out1.png", out1)
+    cv2.imwrite("/Users/aidan/Desktop/out2.png", out2)
+
+
+
+
 
 def main():
 
-    pic = cv2.imread("Data/NewDashboardPictures/darktable_exported/20240221_100532.png", cv2.IMREAD_GRAYSCALE)
-    pic_color = cv2.imread("Data/NewDashboardPictures/darktable_exported/20240221_100532.png")
-    scrnsht = cv2.imread("Data/NewDashboards/Boeing 737 EICAS.png", cv2.IMREAD_GRAYSCALE)
+    n = 1
+    #read in images
+    observed, expected = cv2.imread(f"Data/TestingDiffDiff/test{n}/observed.png"), cv2.imread(f"Data/TestingDiffDiff/test{n}/expected.png")
+
+    #show what the original looked like
+    #cv2.imshow("original", observed)
+    #cv2.imshow("expected", expected)
+
+    #gaussian blur beforehand
+    observed = cv2.GaussianBlur(observed, (5, 5), 0)
+    #cv2.imshow("original blurred", observed)
+
+    #alignment
+    out = align_images(observed, expected)
+
+    #visualize aligned
+    #cv2.imshow("aligned", out)
+
+    cv2.imwrite(f"Data/TestingDiffDiff/test{n}/observed-aligned.png", out)
 
 
-    out = align_images(pic, scrnsht)
-    cv2.imshow("aligned", out)
-    cv2.waitKey()
-    """
-    M = findHomography(pic, scrnsht)
 
-    warped = cv2.warpPerspective(pic, M, (pic.shape[1], pic.shape[0]))
-    cv2.imshow("warped", warped)
-    cv2.waitKey()
-    """
-    
 
 
 
 
 if __name__ == "__main__":
     main()
+    #align_images_example()
 
 

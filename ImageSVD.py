@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 
 def main():
     A = cv2.imread("Data/NewDashboardPictures/darktable_exported/20240221_100532.png", cv2.IMREAD_GRAYSCALE)
+    A = cv2.imread("Data/TestingDiffDiff/test1/observed-aligned.png", cv2.IMREAD_GRAYSCALE)
 
     """
     #form A^tA
@@ -50,7 +51,10 @@ def main():
 
     cv2.imshow("Original Image", A)
     for res in resolutions:
+
+
         leading_eigenvalues = [values[i] if i < res else 0 for i in range(len(values))]
+        print("LEADING EIGNEVALUES:", leading_eigenvalues)
         s = np.diag(np.array(leading_eigenvalues))
         compact_image = np.matmul(np.matmul(u, s), v)
         print(compact_image.shape)
