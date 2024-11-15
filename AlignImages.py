@@ -52,20 +52,21 @@ def findHomography(src, dest):
 
 
 
-def align_images(observed, expected):
+def align_images(moving, static):
     #resize observed to match expected
     #inter_area to make smaller
     #bicubic to make bigger
+    """  # I dont this this even needs to happen
     interpolation = cv2.INTER_AREA
     if (observed.shape[0] > expected.shape[0]) and (observed.shape[1] > expected.shape[1]): #image is bigger
         interpolation = cv2.INTER_CUBIC
     observed = cv2.resize(observed, (expected.shape[1], expected.shape[0]), interpolation=interpolation)
-
+    """
 
     # keypoints and matching
     sift = cv2.SIFT_create()
-    kp1, des1 = sift.detectAndCompute(observed, None)
-    kp2, des2 = sift.detectAndCompute(expected, None)
+    kp1, des1 = sift.detectAndCompute(moving, None)
+    kp2, des2 = sift.detectAndCompute(static, None)
     bf = cv2.BFMatcher(cv2.DIST_L2, crossCheck=True)
     matches = bf.match(des1, des2)  # first is observed, second is expected
     matches = sorted(matches, key=lambda x: x.distance)
@@ -76,10 +77,16 @@ def align_images(observed, expected):
     transformation_matrix, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
 
     # Warp the image
-    observed = cv2.warpPerspective(observed, transformation_matrix, (observed.shape[1], observed.shape[0]))
+    observed = cv2.warpPerspective(moving, transformation_matrix, (static.shape[1], static.shape[0]), flags=cv2.INTER_CUBIC)
 
     #Done
     return observed
+
+
+def PerspectiveRegistration(moving, static):
+    """ Wrapper for align_images(). Homographic transformation using SIFT correspondence."""
+    return align_images(moving, static)
+
 
 
 #print("len matches:", len(matches))
@@ -102,26 +109,23 @@ def align_images_example():
 
 
 def main():
-
-    n = 1
-    #read in images
-    observed, expected = cv2.imread(f"Data/TestingDiffDiff/test{n}/observed.png"), cv2.imread(f"Data/TestingDiffDiff/test{n}/expected.png")
+    fixed = cv2.imread('Data/Teapot/ShapesTeapot.png')
+    moving = cv2.imread('Data/Teapot/5.png')
 
     #show what the original looked like
-    #cv2.imshow("original", observed)
-    #cv2.imshow("expected", expected)
+    cv2.imshow("fixed", fixed)
+    cv2.imshow("moving", moving)
 
     #gaussian blur beforehand
-    observed = cv2.GaussianBlur(observed, (5, 5), 0)
+    #observed = cv2.GaussianBlur(observed, (5, 5), 0)
     #cv2.imshow("original blurred", observed)
 
     #alignment
-    out = align_images(observed, expected)
+    out = align_images(moving, fixed)
 
     #visualize aligned
-    #cv2.imshow("aligned", out)
-
-    cv2.imwrite(f"Data/TestingDiffDiff/test{n}/observed-aligned.png", out)
+    cv2.imshow("registered", out)
+    cv2.waitKey()
 
 
 

@@ -663,6 +663,13 @@ def PowerLawTransform(image, gamma):
     return gamma_corrected
 
 
+def AffineCorrespondenceRegistration(fixed, moving):
+    """
+    Performs a correspondence based affine registration
+    """
+    #grab sift features
+
+
 
 
 

@@ -3,6 +3,8 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 import Graphics
+from AlignImages import PerspectiveRegistration
+
 
 
 
@@ -135,6 +137,9 @@ def step_callback(method):
     """
     #print("iter:", method.GetOptimizerIteration())
     metric_values.append(method.GetMetricValue())
+    i = method.GetOptimizerIteration()
+    if i%10 == 0:
+        print("step")
 
 
 
@@ -253,7 +258,7 @@ def test2():
 
 
 
-def just_numbers(transformation, similarity, optimizer, spline_terms=8, show_composite=False):
+def just_numbers(transformation, similarity, optimizer, spline_terms=8, show_composite=False, maxiter=200):
     """
     --Similarity Metrics--
     --options example--
@@ -270,9 +275,32 @@ def just_numbers(transformation, similarity, optimizer, spline_terms=8, show_com
         'optimizer': 'bfgs' # bfgs, ncg, gd, nm, or powell
     }
 
+    #for reading a tiff
+
+    """
+    reader = sitk.ImageFileReader()
+    reader.SetImageIO("TIFFImageIO")
+    reader.SetFileName("Data/Teapot/ShapesTeapot-gray.tiff", sitk.sitkFloat32)
+    fixed_image = reader.Execute()
+
+    reader2 = sitk.ImageFileReader()
+    reader2.SetImageIO("TIFFImageIO")
+    reader2.SetFileName("Data/Teapot/5-gray.tiff", sitk.sitkFloat32)
+    moving_image = reader.Execute()
+    """
+
+
 
     fixed_image = sitk.ReadImage('Data/Teapot/ShapesTeapot.png', sitk.sitkFloat32)
-    moving_image = sitk.ReadImage('Data/Teapot/4.png', sitk.sitkFloat32)
+    moving_image = sitk.ReadImage('Data/Teapot/5.png', sitk.sitkFloat32)
+
+    #do perspective registration first
+    fixed, moving = sitk.GetArrayFromImage(fixed_image), sitk.GetArrayFromImage(moving_image)
+    moving = PerspectiveRegistration(moving, fixed)
+    
+
+    #fixed_image = sitk.ReadImage('Data/Teapot/ShapesTeapot-gray.tiff', sitk.sitkFloat32)
+    #moving_image = sitk.ReadImage('Data/Teapot/5-gray.tiff', sitk.sitkFloat32)
 
 
     #set transformation
@@ -305,20 +333,20 @@ def just_numbers(transformation, similarity, optimizer, spline_terms=8, show_com
     #optimizer
     if optimizer == 'bfgs':
         registration_method.SetOptimizerAsLBFGSB(gradientConvergenceTolerance=1e-4,
-                       numberOfIterations=100,
+                       numberOfIterations=maxiter,
                        maximumNumberOfCorrections=5,
                        maximumNumberOfFunctionEvaluations=1000,
                        costFunctionConvergenceFactor=1e+7)
     elif optimizer == 'ncg':
-        registration_method.SetOptimizerAsConjugateGradientLineSearch(numberOfIterations=200)
+        registration_method.SetOptimizerAsConjugateGradientLineSearch(learningRate=1.0, numberOfIterations=maxiter)
     elif optimizer == 'gd':
-        #registration_method.SetOptimizerAsGradientDescent(learningRate=1.0, numberOfIterations=200) #line search vs no linesearch?
+        registration_method.SetOptimizerAsGradientDescent(learningRate=1.0, numberOfIterations=maxiter) #line search vs no linesearch?
         #registration_method.SetOptimizerAsRegularStepGradientDescent(4.0, .01, 200)
-        registration_method.SetOptimizerAsGradientDescentLineSearch(learningRate=1.0,
-                                                  numberOfIterations=200,
-                                                  convergenceMinimumValue=1e-5,
-                                                  convergenceWindowSize=5)
-
+        #registration_method.SetOptimizerAsGradientDescentLineSearch(learningRate=1.0, numberOfIterations=200, convergenceMinimumValue=1e-5, convergenceWindowSize=5)
+    elif optimizer == 'nm': #nelder mead
+        registration_method.SetOptimizerAsAmoeba(simplexDelta=1.0, numberOfIterations=maxiter)
+    elif optimizer == 'powell':
+        registration_method.SetOptimizerAsPowell(numberOfIterations=maxiter)
 
 
     #More setup
@@ -333,6 +361,7 @@ def just_numbers(transformation, similarity, optimizer, spline_terms=8, show_com
     #registration_method.SetSmoothingSigmasPerLevel(smoothingSigmas=[2, 1, 0])
 
     registration_method.SmoothingSigmasAreSpecifiedInPhysicalUnitsOn()
+    registration_method.SetOptimizerScalesFromPhysicalShift()
 
     # add iteration callback. metric at each iter stored in metric_values from this
     registration_method.AddCommand(sitk.sitkIterationEvent, lambda: step_callback(registration_method))
@@ -376,8 +405,10 @@ def just_numbers(transformation, similarity, optimizer, spline_terms=8, show_com
 
 
 
-sample1()
-#just_numbers(transformation='bspline', similarity='ncc', optimizer='gd', spline_terms=15, show_composite=True)
+#sample1()
+just_numbers(transformation='bspline', similarity='ncc', optimizer='bfgs', spline_terms=5, show_composite=True, maxiter=200)
+
+
 
 
 
