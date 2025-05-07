@@ -107,7 +107,6 @@ def align_images_example():
 
 
 
-
 def main():
     fixed = cv2.imread('Data/Teapot/ShapesTeapot.png')
     moving = cv2.imread('Data/Teapot/5.png')

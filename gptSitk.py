@@ -255,6 +255,40 @@ def test2():
 
 
 
+def itk_to_cv(image):
+    out = sitk.GetArrayFromImage(image)
+    out = cv2.normalize(out, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+    return out
+
+def figure_out_image_representation():
+    fixed = sitk.ReadImage('Data/Teapot/ShapesTeapot.png', sitk.sitkFloat32)
+    print(fixed.GetPixelIDTypeAsString())
+    moving = sitk.ReadImage('Data/Teapot/5.png')
+
+
+
+    print(moving.GetPixelIDTypeAsString())
+    print(moving.GetPixel((56, 40)))
+
+    cv_moving = cv2.imread('Data/Teapot/5.png', cv2.IMREAD_GRAYSCALE)
+    cv_moving = cv_moving.astype(np.float32)
+    print(cv_moving[56, 40])
+    image = sitk.GetImageFromArray(cv_moving, isVector=False)
+    print(image.GetPixel((40, 56)))
+    print(image.GetPixelIDTypeAsString())
+    print('------------')
+    print(cv_moving[238, 645])
+    print(image.GetPixel((645, 238)))
+    #print(cv_moving[40][56])
+    #print(cv_moving.shape)
+    #print(moving.GetSize())
+    """
+    print(moving.GetPixelIDTypeAsString())
+    print(fixed.GetDepth())
+    print(fixed.GetOrigin())
+    print(fixed.GetSize())
+    print(fixed.GetPixel((0, 0)))
+    """
 
 
 
@@ -291,13 +325,25 @@ def just_numbers(transformation, similarity, optimizer, spline_terms=8, show_com
 
 
 
-    fixed_image = sitk.ReadImage('Data/Teapot/ShapesTeapot.png', sitk.sitkFloat32)
-    moving_image = sitk.ReadImage('Data/Teapot/5.png', sitk.sitkFloat32)
 
-    #do perspective registration first
-    fixed, moving = sitk.GetArrayFromImage(fixed_image), sitk.GetArrayFromImage(moving_image)
-    moving = PerspectiveRegistration(moving, fixed)
-    
+    #original images
+    #fixed_image = sitk.ReadImage('Data/Teapot/ShapesTeapot.png', sitk.sitkFloat32)
+    #moving_image = sitk.ReadImage('Data/Teapot/5.png', sitk.sitkFloat32)
+
+    #some test images
+    fixed_image = sitk.ReadImage('/Users/aidan/Desktop/ExpoSet/expected/15.png', sitk.sitkFloat32)
+    moving_image = sitk.ReadImage('/Users/aidan/Desktop/ExpoSet/observed/15.png', sitk.sitkFloat32)
+
+
+
+    #fixed_image = cv2.imread('Data/Teapot/ShapesTeapot.png', cv2.IMREAD_GRAYSCALE).astype(np.float32)
+    #moving_image = cv2.imread('Data/Teapot/5.png', cv2.IMREAD_GRAYSCALE).astype(np.float32)
+    #fixed_image = sitk.GetImageFromArray(fixed_image, isVector=False)
+    #moving_image = sitk.GetImageFromArray(moving_image, isVector=False)
+    #fixed_image = sitk.ReadImage('Data/Teapot/ShapesTeapot.png', sitk.sitkFloat32)
+    #moving_image = sitk.ReadImage('Data/Teapot/5.png', sitk.sitkFloat32)
+
+
 
     #fixed_image = sitk.ReadImage('Data/Teapot/ShapesTeapot-gray.tiff', sitk.sitkFloat32)
     #moving_image = sitk.ReadImage('Data/Teapot/5-gray.tiff', sitk.sitkFloat32)
@@ -380,6 +426,10 @@ def just_numbers(transformation, similarity, optimizer, spline_terms=8, show_com
 
     #create plot
     plt.plot(metric_values)
+    #plt.ylim(left=-1, right=1)
+    plt.ylim(top=0, bottom=-1.0)
+    if len(metric_values) <= 100:
+        plt.xlim(left=0, right=100)
     plt.title(f"{optimizer}, {similarity}, {transformation}, spline terms:{spline_terms}")
     plt.show()
 
@@ -406,7 +456,8 @@ def just_numbers(transformation, similarity, optimizer, spline_terms=8, show_com
 
 
 #sample1()
-just_numbers(transformation='bspline', similarity='ncc', optimizer='bfgs', spline_terms=5, show_composite=True, maxiter=200)
+just_numbers(transformation='bspline', similarity='ncc', optimizer='ncg', spline_terms=4, show_composite=True, maxiter=200)
+#figure_out_image_representation()
 
 
 

@@ -14,8 +14,11 @@ from itertools import product as CartesianProduct
 import os
 import re
 import skimage
+import math
+from scipy.ndimage import generic_filter
 from PIL import Image
 from skimage.exposure import match_histograms
+np.set_printoptions(suppress=True)
 
 
 
@@ -670,6 +673,289 @@ def AffineCorrespondenceRegistration(fixed, moving):
     #grab sift features
 
 
+def GetGaussianKernel(n, sigma, normalize=True):
+    """
+    Returns a 2D gaussian kernel of shape n x n.
+    If normalized, the elements of the gaussian kernel will be between 0 and 1, and
+    the sum of all elements will add up to 1.
+    """
+    #Check that n is odd and gte to 3.
+    assert n >= 3, "n must be greater than or equal to 3."
+    assert n % 2 == 1, "n must be and odd number."
+
+    #grab gaussian kernel
+    kernel = cv2.getGaussianKernel(n, sigma)
+
+    #un-normalize it.
+    kernel /= kernel[0, 0]
+
+    #multiply by transpose to make it 2D
+    kernel = kernel @ kernel.T
+
+    #make normal
+    if normalize:
+        kernel /= kernel.sum()
+
+    #return the resulting gaussian kernel
+    return kernel
+
+def chatgpt_get_gaussian_kernel(n, sigma):
+    """This appears to work properly"""
+    # Compute the range of x values (centered)
+    x = np.arange(n) - (n - 1) / 2
+
+    # Apply the Gaussian formula
+    kernel = np.exp(-0.5 * (x / sigma) ** 2)
+
+    # Normalize the kernel so the sum is 1
+    kernel /= kernel.sum()
+
+    # Convert to a column vector
+    return kernel.reshape(-1, 1)
+
+
+def gaussian_derivative(x, sigma):
+    """
+    Returns the derivative of a 1d gaussian function at x, where the mean is 0, and the standard deviation is sigma.
+    Verify results with wolfram...
+
+    Calculating the derivative of the gaussian function:
+        https://www.wolframalpha.com/input?i2d=true&i=Divide%5Bd%2Cdx%5D+Divide%5B1%2C%CF%83Sqrt%5B2%CF%80%5D%5D+*+exp%5C%2840%29%5C%2840%29-Divide%5B1%2C2%5D+%5C%2841%29*+Power%5B%5C%2840%29Divide%5Bx%2C%CF%83%5D%5C%2841%29%2C2%5D%5C%2841%29
+
+    Evaluate derivative of gaussian at some point:
+        https://www.wolframalpha.com/input?i=-%28e%5E%28-x%5E2%2F%282+%CF%83%5E2%29%29+x%29%2F%28sqrt%282+%CF%80%29+%CF%83%5E3%29%3B+x%3D3%2C+%CF%83%3D2
+    """
+    result = ((-1 * x) / (sigma**3 * np.sqrt(2*np.pi))) * np.exp(-0.5 * (x/sigma)**2)
+    return result
+
+def GaussianKernelDerivative(n, sigma, normalize=True, dimensions=1):
+    #range of x values
+    x = np.arange(n) - (n - 1) / 2
+
+    #evaluate in
+    kernel = gaussian_derivative(x, sigma)
+
+    # Normalize the kernel so the sum is 1
+    if normalize:
+        kernel /= kernel.sum()
+
+    #convert to column vector
+    kernel = kernel.reshape(-1, 1)
+
+    #make into 2d kernel
+    if dimensions == 2:
+        kernel = kernel @ kernel.T
+
+    return kernel
+
+
+def colorize_2d_matrix(m):
+    """
+    NOTE - THIS IS NOT DONE. DO NOT USE.
+    """
+    max_val = np.amax(m)
+    min_val = np.amin(m)
+    r = max_val - min_val#range the data spans
+    tol = 0.001 * r # tolerance is 0.1% the range of the data
+    out = np.zeros((m.shape[0], m.shape[1], 3), dtype=np.uint8) # output image
+    red_hi = np.array([0, 0, 255])
+    red_lo = np.array([0, 0, 255])
+
+    for row in range(m.shape[0]):
+        for col in range(m.shape[1]):
+            value = m[row][col]
+            if math.isclose(value, 0, rel_tol=tol): # close to zero -> make white
+                color = (255, 255, 255)
+            elif value > 0.0: # green
+                p = value
+
+
+
+def ExecutionTime(func):
+    import time
+    start = time.time()
+    func()
+    end = time.time()
+    total = end - start
+    return total
+
+
+def draw_sift_matches(image1, image2, n, lowe_ratio=0.70, print_point_locations=False):
+    #convert to grayscale. OpenCV SIFT feature detection only works with grayscale images.
+    image1_gray, image2_gray = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY), cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)
+
+    #Find sift features
+    sift = cv2.SIFT_create()
+    kp1, des1 = sift.detectAndCompute(image1_gray, None)
+    kp2, des2 = sift.detectAndCompute(image2_gray, None)
+
+    #match keypoints
+    bf = cv2.BFMatcher()
+    matches = bf.knnMatch(des1, des2, k=2)
+
+    #apply lowe's ratio test
+    good_matches = []
+    for m1, m2 in matches:
+        if m1.distance < (lowe_ratio * m2.distance):
+            good_matches.append(m1)
+
+    #sort matches by distance
+    good_matches = sorted(good_matches, key=lambda match: match.distance)
+
+    #error checking where not enough good matches were found
+    if len(good_matches) < n:
+        print(f"WARNING: Not enough sift matches found. Reducing n to match number of matches, {len(good_matches)}")
+        print("\tYou can also try reducing the lowe ratio to allow for less strict matching.")
+        n = len(good_matches)
+
+    #draw each match on the image
+    if print_point_locations:
+        print(f"MATCH N:   IMAGE1\t\t\t\t\tIMAGE2")
+    for i in range(n):
+        #parse out matching point locations
+        match = good_matches[i]
+        point1, point2 = kp1[match.queryIdx].pt, kp2[match.trainIdx].pt
+
+        # round points to nearest pixel, make sure they are integers
+        point1_i = int(point1[0] + 0.5), int(point1[1] + 0.5)
+        point2_i = int(point2[0] + 0.5), int(point2[1] + 0.5)
+
+        #draw points and labels
+        cv2.circle(image1, point1_i, 4, (0, 0, 255), -1)
+        cv2.circle(image2, point2_i, 4, (0, 0, 255), -1)
+        cv2.putText(image1, str(i+1), (point1_i[0] + 10, point1_i[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+        cv2.putText(image2, str(i+1), (point2_i[0] + 10, point2_i[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+
+        if print_point_locations:
+            #print(f"{i}: {point1}\t{point2}")
+            # tup[0]:10.2f
+            print(f"{i+1:6}: ({point1[0]:8.2f},{point1[1]:8.2f})    ({point2[0]:8.2f},{point2[1]:8.2f})")
+
+    cv2.imshow('image1', image1)
+    cv2.imshow('image2', image2)
+    cv2.waitKey()
+
+
+
+
+
+def sliding_window_stride_view(img, window_size):
+    """
+    --Helper for SlidingWindow--
+    Reshapes the image using numpy's stride feature to create a set of windows.
+    """
+    # Assumes img is a NumPy array
+    if len(img.shape) == 2:
+        stride_h, stride_w = img.strides
+        h, w = img.shape
+        window_h, window_w = window_size
+        out_shape = (h - window_h + 1, w - window_w + 1, window_h, window_w)
+        strides = (stride_h, stride_w, stride_h, stride_w)
+    elif len(img.shape) == 3:
+        stride_h, stride_w, stride_c = img.strides
+        h, w, c = img.shape
+        window_h, window_w = window_size
+        out_shape = (h - window_h + 1, w - window_w + 1, window_h, window_w, c)
+        strides = (stride_h, stride_w, stride_h, stride_w, stride_c)
+    else:
+        raise ValueError(f"image has to have 2 or 3 dimensions, this one has {len(img.shape)}.")
+
+    # Compute start indices of window centers
+    center_row_start = window_h // 2
+    center_col_start = window_w // 2
+    return (
+        np.lib.stride_tricks.as_strided(img, shape=out_shape, strides=strides),
+        center_row_start,
+        center_col_start
+    )
+
+def sliding_window_generator(image, window_size):
+    """
+    --Helper for SlidingWindow--
+    A generator for SlidingWindow for iterating over the windows
+    """
+    windows, row_start, col_start = sliding_window_stride_view(image, window_size)
+    for row_idx, window_row in enumerate(windows):
+        for col_idx, window in enumerate(window_row):
+            row = row_idx + row_start
+            col = col_idx + col_start
+            yield window, row, col
+
+def SlidingWindow(image, shape, window_handler, padding_mode='reflect'):
+    """
+    - Shape must be 2 dimensions. It is (rows, cols).
+    - Default padding mode is 'reflect'.
+    """
+    is_color = len(image.shape) == 3
+
+    #check that the window shape has odd dimensions
+    h, w = shape
+    pad_y = h//2
+    pad_x = w//2
+    is_odd = (w%2 == 1) and (h%2 == 1)
+    is_big_enough = (w >= 3) and (h >= 3)
+    if not is_odd:
+        raise ValueError("Window width and height must be odd.")
+    elif not is_big_enough:
+        raise ValueError("Window width and height must be >=3")
+
+    #check for valid padding mode
+    possible_padding_modes = ['linear_ramp', 'maximum', 'mean', 'median', 'minimum', 'reflect', 'edge', 'symmetric', 'wrap']
+    if padding_mode not in possible_padding_modes:
+        raise ValueError(f"Invalid padding mode, {padding_mode}. Options are {possible_padding_modes}.")
+
+
+    #apply padding to input image
+    if len(image.shape) == 2:
+        pad_width = ((h // 2, h // 2), (w // 2, w // 2))
+    elif len(image.shape) == 3:
+        pad_width = ((h // 2, h // 2), (w // 2, w // 2), (0, 0))
+    else:
+        raise ValueError('Image shape must be 2 or 3 dimensions')
+
+    #pad_width = ((h//2, h//2), (w//2, w//2))  # ((top, bottom), (left, right))
+    image = np.pad(image, pad_width=pad_width, mode=padding_mode)
+    print(pad_width)
+    #Allocate output image
+    out = np.zeros((image.shape[0], image.shape[1]), dtype=np.float32)
+
+    #Iterate over window locations and invoke window handler
+    for window, row, col in sliding_window_generator(image, shape):
+        #print(window_handler(window))
+        try:
+            out[row, col] = window_handler(window)
+        except TypeError:
+            print(window_handler(window))
+        except ValueError:
+            print(window_handler(window))
+
+    #remove the extraneous padding
+    out = out[pad_y: -1 * pad_y, pad_x:-1 * pad_x]
+    if is_color:
+        #out = out[pad_y: -1*pad_y, pad_x:-1*pad_x, :]
+        pass
+    else:
+        pass
+        #out = out[pad_y: -1*pad_y, pad_x:-1*pad_x]
+    return out
+
+
+
+
+def UnsharpMask(image, k, sigma=2.0, alpha=2.0, beta=-1.0, gamma=0):
+    """
+    k is the size of the window for the gaussian blur
+    The strength of the effect can be altered by adjusting the alpha and beta weightings, for example: 1.5 and -0.5.
+    """
+    gblur = cv2.GaussianBlur(image, (k, k), 2.0)
+    unsharp_image = cv2.addWeighted(image, 2.0, gblur, -1.0, 0)
+    return unsharp_image
+
+
+
+############################################################################################################
+# TESTS
+############################################################################################################
 
 
 
@@ -810,27 +1096,141 @@ def directly_on_rgb():
     cv2.waitKey()
 
 
+def test_execution_time_of_e():
+    import random
+
+    #generate samples to test
+    n_samples = 50
+    samples = [random.uniform(-1.0, 2.0) for _ in range(n_samples)]
+
+    #functions to test
+    def e_with_math():
+        for x in samples:
+            math.exp(x)
+
+    def e_with_numpy():
+        for x in samples:
+            np.exp(x)
+
+    #test the execution time
+
+    t1 = ExecutionTime(e_with_numpy)
+    t2 = ExecutionTime(e_with_math)
+    print('numpy time:', t1)
+    print('math time:', t2)
+    if t1 < t2: #numpy faster
+        print(f"Numpy execution time was {t2/t1} times faster.")
+    else: #math faster
+        print(f"Math execution time was {t1/t2} times faster.")
+
+
+
+
+def test_gaussian_filtering_1d():
+    """
+    test one dimensional kernels against plot in this link...
+       https://hannibunny.github.io/orbook/preprocessing/04gaussianDerivatives.html
+    """
+    #Disable scientific notation for numpy
+    np.set_printoptions(suppress=True)
+
+    n = 15
+    sigma = 1.5
+    x = np.arange(n) - (n - 1) / 2
+    kernel = chatgpt_get_gaussian_kernel(n, sigma)
+    print(kernel)
+    print(kernel.flatten())
+    derivative_kernel = GaussianKernelDerivative(n, sigma, normalize=False)
+
+    #plot the kernel value
+    plt.plot(x, kernel.flatten(), color='red')
+    plt.show()
+
+    plt.plot(x, derivative_kernel.flatten(), color='blue')
+    plt.show()
+
+
+
+def test_gaussian_filtering_2d():
+    # now check to make sure the
+    # 2d gaussian filter works
+    np.set_printoptions(suppress=True)
+    n = 15
+    sigma = 1.5
+    x = np.arange(n) - (n - 1) / 2
+
+
+    derivative_kernel = GaussianKernelDerivative(n, sigma, normalize=False, dimensions=2)
+    print(derivative_kernel)
+
+    #normalize the range of the derivative kernel for visualizing
+    image = cv2.normalize(derivative_kernel, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+    image = cv2.resize(image, (400, 400), interpolation=cv2.INTER_NEAREST)
+    cv2.imshow('', image)
+    cv2.waitKey()
+
+
+
+
+def fill_with_blue():
+    """
+    Goal is top fix the other image. has some problems
+    """
+    background_color = np.array([154, 106, 64], dtype=np.uint8)
+    image = cv2.imread("Data/PerspectiveTeapot/moving.png", cv2.IMREAD_UNCHANGED)
+    out = image[:, :, :3]
+    alpha = image[:, :, 3]
+
+    alpha_mask = alpha == 0
+    out[alpha_mask] = background_color
+    cv2.imshow('filled in', out)
+    #cv2.imshow('alpha channel', alpha)
+    cv2.waitKey()
+
+def test_drawing_matching_sift_features():
+    static = cv2.imread('Data/PerspectiveTeapot/static.png')
+    moving = cv2.imread('Data/PerspectiveTeapot/moving2.png')
+    draw_sift_matches(static, moving, 30, lowe_ratio=0.50, print_point_locations=True)
+
+
+
+
+def test_sliding_window():
+    #setup test
+    image = cv2.imread("Data/PerspectiveTeapot/moving2.png")
+    gray = cv2.imread("Data/PerspectiveTeapot/moving2.png", cv2.IMREAD_GRAYSCALE)
+    cv2.imshow('Original Image', image)
+    window_size = (13, 13)
+
+    #call with both a color and grayscale image
+    blurred = SlidingWindow(image, window_size, lambda window: window.mean(axis=(0, 1)))
+    gray_blurred = SlidingWindow(gray, window_size, lambda window: window.mean())
+
+    print("Check these are all the same...")
+    print('original shape:', image.shape)
+    print('blurred shape:', blurred.shape)
+    print('gray blurred shape:', gray_blurred.shape)
+
+    #display the results
+    cv2.imshow('Blurred Image', blurred)
+    cv2.imshow('Gray Blurred Image', gray_blurred)
+    cv2.waitKey()
+
+
+
 
 
 
 def main():
     """for testing things in this script"""
-    #test_histogram_matching()
-    #directly_on_rgb()
+    #test_gaussian_filtering_1d()
+    #test_gaussian_filtering_2d()
+    #fill_with_blue()
+    #test_drawing_matching_sift_features()
+    test_sliding_window()
 
-    """
-    img = cv2.imread("Data/TestingDiffDiff/test2/unobstructed-aligned.png")
-    a, b, c = img.shape
-    print(a*b*c)
-    with open("Data/TestingDiffDiff/test2/unobstructed-aligned.png", mode='rb') as file:  # b is important -> binary
-        fileContent = file.read()
-        img = Image.open(fileContent)
 
-        cv2.imshow("", img)
-        cv2.waitKey()
-        image = cv2.imread(fileContent)
-        print(fileContent)
-    """
+
 
 
 if __name__ == "__main__":
