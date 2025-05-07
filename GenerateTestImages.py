@@ -14,7 +14,7 @@ def aabb(image):
     if image.shape[2] < 4:
         raise ValueError("The image array must have an alpha channel.")
 
-        # Find the alpha channel
+    # Find the alpha channel
     alpha_channel = image[:, :, 3]
 
     # Identify rows and columns that contain non-transparent pixels
@@ -234,6 +234,12 @@ def test_the_whole_shebang(iters):
         cv2.imread("Obstructions/split.png", cv2.IMREAD_UNCHANGED)
     ]
 
+
+
+
+
+
+        #iterate over obstructions
     # base image
     base = cv2.imread("Data/TestSet1/test1/expected.png", cv2.IMREAD_UNCHANGED)
 
@@ -258,14 +264,139 @@ def test_the_whole_shebang(iters):
         cv2.waitKey()
 
 
+def show(image):
+    cv2.imshow("", image)
+    cv2.waitKey()
 
+def creating_test_set(save, display):
+    #output directory
+    save_directory = "GeneratedSet"
+
+    # list of obstructed overlays
+    obstructions = [
+        cv2.imread("Obstructions/corner.png", cv2.IMREAD_UNCHANGED),
+        cv2.imread("Obstructions/failure.png", cv2.IMREAD_UNCHANGED),
+        cv2.imread("Obstructions/line.png", cv2.IMREAD_UNCHANGED),
+        cv2.imread("Obstructions/split.png", cv2.IMREAD_UNCHANGED)
+    ]
+
+    # dashboards
+    dashboards = [
+        cv2.imread("Digikam/Unobstructed/B737EICAS-s-u.png"),
+        cv2.imread("Digikam/Unobstructed/dash1-s-u.png"),
+        cv2.imread("Digikam/Unobstructed/dash2-s-u.png"),
+        cv2.imread("Digikam/Unobstructed/dash3-s-u.png"),
+        cv2.imread("Digikam/Unobstructed/dash4-s-u.png"),
+        cv2.imread("Digikam/Unobstructed/fdeck1-s-u.png"),
+        cv2.imread("Digikam/Unobstructed/fdeck2-s-u.png"),
+        cv2.imread("Digikam/Unobstructed/garmin-s-u.png"),
+        cv2.imread("Digikam/Unobstructed/jacobdash-s-u.png")
+    ]
+
+    # iterate over dashboards and obstructions
+    for d in range(len(dashboards)):
+        dashboard = dashboards[d]
+
+        # show the unobstructed dashboard
+        if display:
+            show(dashboard)
+        mask = np.zeros(dashboard.shape).astype(np.uint8) #unobstructed mask.
+
+        #save
+        if save:
+            filename = f"dash{d + 1}-obstruction{0}.png"
+            mask_filename = f"mask-dash{d + 1}-obstruction{0}.png"
+            cv2.imwrite(f"{save_directory}/{filename}", dashboard)
+            cv2.imwrite(f"{save_directory}/{mask_filename}", mask)
+
+        for o in range(len(obstructions)):
+            for i in range(5):
+                obstructed = dashboard.copy() # copy of the dashboard as not to accumulate modifications in inner loop
+                obstruction = randomly_transform_obstruction(obstructions[o]) #randomly transform the obstruction
+                randomly_place_obstruction(obstructed, obstruction) # randomly place the obstruction
+                mask = create_modification_mask(dashboard, obstructed) # binary mask
+
+
+                if save:
+                    #construct string for saving the images
+                    filename = f"dash{d+1}-obstruction{o+1}-{i+1}.png"
+                    mask_filename = f"mask-dash{d+1}-obstruction{o+1}-{i+1}.png"
+                    cv2.imwrite(f"{save_directory}/{filename}", obstructed)
+                    cv2.imwrite(f"{save_directory}/{mask_filename}", mask)
+
+                #display to demonstrate progress so far.
+                if display:
+                    show(obstructed)
+
+
+
+def add_noise(image):
+    #separate out the color and alpha channels
+    color_channels = image[:, :, :3]
+    alpha_channel = image[:, :, 3]
+
+    #create mask from the alpha channel
+    mask = (alpha_channel > 0).astype(np.uint8)
+    cv2.imshow("alpha channel", alpha_channel)
+    cv2.waitKey()
+    print(np.amax(mask))
+    print(np.amin(mask))
+
+    #--add gaussian noise--
+    # Generate Gaussian noise
+    mean = 0
+    std_dev = 20
+    print(color_channels.shape)
+    noise = np.random.normal(mean, std_dev, color_channels.shape)
+
+    # Add the noise to the image
+    noisy_image = color_channels + noise  # Add the noise to the image
+    noisy_image = np.clip(noisy_image, 0, 255) # Clip the values to uint8 range [0, 255] to prevent data type overflow
+    noisy_image = noisy_image.astype(np.uint8) # Convert back to uint8
+
+    #Recombine the alpha channel back to the image.
+    noisy_image = np.dstack((noisy_image, alpha_channel))
+
+    #return resulting image
+    return noisy_image
+
+
+def test_add_noise():
+    obstruction = cv2.imread("Obstructions/corner.png", cv2.IMREAD_UNCHANGED)
+    cv2.imshow("original", obstruction)
+    out = add_noise(obstruction)
+
+    """
+    print(obstruction.shape)
+
+    alpha_channel = obstruction[:, :, 3]
+    print(np.amax(alpha_channel))
+    print(np.amin(alpha_channel))
+
+    out = add_noise(obstruction)
+
+    mask = np.any(alpha_channel != 0)
+    print(mask.dtype)
+    print(mask.shape)
+
+    #mask = mask.astype(int) * 255
+    #mask = mask.astype(np.uint8)
+    #cv2.imshow("mask", mask)
+    """
+
+
+    cv2.imwrite("TESTBACKGROUNDTHING.png", out)
+    cv2.imshow("noisy", out)
+    cv2.waitKey()
 
 
 
 
 
 def main():
-    test_the_whole_shebang(30)
+    #test_the_whole_shebang(30)
+    #test_add_noise()
+    creating_test_set(save=True, display=False)
 
 
 if __name__ == "__main__":

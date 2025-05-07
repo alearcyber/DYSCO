@@ -7,9 +7,9 @@ from skimage.exposure import match_histograms
 import Dysco
 
 
-x = cv2.imread("data/dash5325.png")
-x = cv2.cvtColor(x, cv2.COLOR_BGR2RGB)
-cv2.imwrite("data/newdash5325.png", x)
+#x = cv2.imread("data/dash5325.png")
+#x = cv2.cvtColor(x, cv2.COLOR_BGR2RGB)
+#cv2.imwrite("data/newdash5325.png", x)
 
 def read_test_images():
     template = cv2.imread("Data/NewDashboards/fDeck2.png")
@@ -56,33 +56,48 @@ def line_em_up():
 
 
 
-def match_histograms_hsv(image_path1, image_path2):
-    # Read the images
-    image1 = cv2.imread(image_path1)
-    image2 = cv2.imread(image_path2)
+def match_histograms_hsv(image, reference):
+    image1, image2 = image, reference
 
     # Convert images from BGR to HSV
-    hsv_image1 = cv2.cvtColor(image1, cv2.COLOR_BGR2HSV)
-    hsv_image2 = cv2.cvtColor(image2, cv2.COLOR_BGR2HSV)
+    hsv_image1, hsv_image2 = cv2.cvtColor(image1, cv2.COLOR_BGR2HSV), cv2.cvtColor(image2, cv2.COLOR_BGR2HSV)
 
     # Extract the Value channel
-    v_channel1 = hsv_image1[:, :, 2]
-    v_channel2 = hsv_image2[:, :, 2]
+    v_channel1, v_channel2 = hsv_image1[:, :, 2], hsv_image2[:, :, 2]
 
     # Match histograms of the value channels
-    matched_v_channel2 = match_histograms(v_channel2.astype('float32'), v_channel1.astype('float32'), multichannel=False)
+    #matched_v_channel1 = match_histograms(v_channel1.astype('float32'), v_channel2.astype('float32'), multichannel=False)
+    matched_v_channel1 = match_histograms(v_channel1.astype('float32'), v_channel2.astype('float32'))
 
     # Replace the Value channel in the second image with the matched one
-    hsv_image2[:, :, 2] = matched_v_channel2.astype('uint8')
+    hsv_image1[:, :, 2] = matched_v_channel1.astype('uint8')
 
-    # Convert back from HSV to BGR
-    result_image1 = cv2.cvtColor(hsv_image1, cv2.COLOR_HSV2BGR)
-    result_image2 = cv2.cvtColor(hsv_image2, cv2.COLOR_HSV2BGR)
+    result = cv2.cvtColor(hsv_image1, cv2.COLOR_HSV2BGR) # Convert back from HSV to BGR
+    result = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
+    return result
 
-    # Save or display the results
-    cv2.imwrite('result_image1.jpg', result_image1)
-    cv2.imwrite('result_image2.jpg', result_image2)
-    print("Images processed and saved.")
+
+
+
+def function_here():
+    observed, expected = cv2.imread("Data/TestSet1ProperlyFormatted/test2/observed.png"), cv2.imread("Data/TestSet1ProperlyFormatted/test2/observed.png")
+    observed = cv2.GaussianBlur(observed, (5, 5), 0)
+
+    #just do the regular grayscale
+    gray_unmodified = cv2.cvtColor(observed, cv2.COLOR_BGR2GRAY)
+    cv2.imshow("gray_unmodified", gray_unmodified)
+
+    #match the hsv part of the histogram
+    observed = match_histograms_hsv(observed, expected)
+
+    cv2.imshow('matched up', observed)
+    cv2.waitKey()
+
+
+
+
+function_here()
+
 
 
 #line_em_up()

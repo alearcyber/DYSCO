@@ -726,6 +726,7 @@ def varying_downsample_size_helper(r, c):
 
 
 
+
         # Grab the ground truth with the booleans for each of the down-sampled regions
         gt = create_gt_array(gt, r, c)
         gt = list(np.array(gt).flatten())
