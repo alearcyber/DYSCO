@@ -69,4 +69,8 @@ def ShowImages(images, titles=None):
 
 
 
+
+#need to make something to parse the JSON better.
+
+
 #EOF

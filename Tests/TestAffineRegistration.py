@@ -2,6 +2,7 @@ import sys
 import os
 import cv2
 import numpy as np
+import json
 
 import Support
 
@@ -51,9 +52,9 @@ def test_find_transform():
 
 
 def test_overfit_checkerboard():
-    static = cv2.imread("/Users/aidanlear/PycharmProjects/DYSCO-2025/Data/Displays/Checkerboard-7x9.png")
+    static = cv2.imread("../Data/Displays/Checkerboard-7x9.png")
     #moving = cv2.imread("/Users/aidanlear/PycharmProjects/DYSCO-2025/Data/Mar14Tests/Cropped/0044.jpg")
-    moving = cv2.imread("/Users/aidanlear/PycharmProjects/DYSCO-2025/Data/Mar14Tests/0044.jpg")
+    moving = cv2.imread("../Data/Mar14Tests/0044.jpg")
 
     Support.ShowImage(moving)
 
@@ -88,23 +89,63 @@ def test_overfit_checkerboard():
     for p1, p2, color in zip(moving_pts, static_pts, colors):
         #cv2.circle(image, centerOfCircle, radius, color, thickness)
         #moving_with_pts = cv2.circle(moving_with_pts, p1.astype(int), 10, color, -1)
+        cv2.circle(static_with_pts, p2.astype(int), 10, color, -1)
+
+
+
+    Support.ShowImage(static_with_pts)
+
+
+
+
+def test_current_kps():
+    """
+    Good: 39, 40, 41
+    """
+    image_to_test = 41
+    data_file = "../dataset.json"
+
+    with open(data_file, 'r') as file:
+        # Load the JSON data into a Python object
+        data = json.load(file)
+
+
+    #parse the json
+    file, original = None, None
+    source_keypoints = None
+    destination_keypoints = None
+    image_list = data["images"]
+    for image_data in image_list:
+        if image_data['id'] == image_to_test:
+            file, original = image_data['file'], image_data['original']
+            source_keypoints = np.array(image_data['source_keypoints'])
+            destination_keypoints = np.array(image_data['destination_keypoints'])
+            break
+
+    assert len(source_keypoints) == len(destination_keypoints), "Mismatched number of keypoints."
+
+
+
+    #read in images
+    dest = cv2.imread("../Data/Displays/" + original) #aka static
+    src = cv2.imread("../Data/Mar14Tests/Cropped/" + file) #aka moving
+
+    # draw points on images and show as a verification step before continuing with registration.
+    static_with_pts = np.copy(dest)
+    moving_with_pts = np.copy(src)
+
+    colors = Color.GenerateColors(len(source_keypoints))
+    for p1, p2, color in zip(source_keypoints, destination_keypoints, colors):
+        # cv2.circle(image, centerOfCircle, radius, color, thickness)
         cv2.circle(moving_with_pts, p1.astype(int), 10, color, -1)
+        cv2.circle(static_with_pts, p2.astype(int), 10, color, -1)
 
-
-
-    Support.ShowImage(moving_with_pts)
-
-
-
-
-
-
-
+    Support.ShowImages((static_with_pts, moving_with_pts), ('static', 'moving'))
 
 
 
 def main():
-    test_overfit_checkerboard()
+    test_current_kps()
 
 if __name__ == "__main__":
     main()

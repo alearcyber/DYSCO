@@ -8,16 +8,6 @@
   },
   "images": [
     {
-      "id": 1,
-      "file": "0001.png",
-      "original": "box-black.png"
-    },
-    {
-      "id": 2,
-      "file": "0002.png",
-      "original": "box-black.png"
-    },
-    {
       "id": 3,
       "file": "0003.png",
       "original": "box-black.png",
@@ -123,16 +113,6 @@
       ]
     },
     {
-      "id": 8,
-      "file": "0008.png",
-      "original": "box-green.png"
-    },
-    {
-      "id": 9,
-      "file": "0009.png",
-      "original": "box-green.png"
-    },
-    {
       "id": 10,
       "file": "0010.png",
       "original": "box-green.png",
@@ -153,11 +133,7 @@
         [400, 425]
       ]
     },
-    {
-      "id": 11,
-      "file": "0011.png",
-      "original": "box-green.png"
-    },
+
     {
       "id": 12,
       "file": "0012.png",
@@ -242,11 +218,6 @@
         [400, 675]
       ]
     },
-    {
-      "id": 16,
-      "file": "0016.jpg",
-      "original": "box-black.png"
-    },
 
 
 
@@ -269,11 +240,7 @@
         [400, 675]
       ]
     },
-    {
-      "id": 18,
-      "file": "0018.jpg",
-      "original": "box-red.png"
-    },
+
     {
       "id": 19,
       "file": "0019.jpg",
@@ -367,6 +334,11 @@
         [990.00, 1643.50]
       ],
       "destination_keypoints": [
+        [0, 0],
+        [1600, 0],
+        [1600, 900],
+        [0, 900],
+        [400, 675]
       ]
     },
 
@@ -506,15 +478,6 @@
 
 
 
-    {
-      "id": 31,
-      "file": "0031.jpg",
-      "original": "5.png",
-      "source_keypoints:":[
-      ],
-      "destination_keypoints": [
-      ]
-    },
     {
       "id": 32,
       "file": "0032.jpg",
@@ -869,15 +832,6 @@
         [328.50, 1078.12],
         [253.45, 1042.36],
         [376.00, 229.62]
-      ]
-    },
-    {
-      "id": 48,
-      "file": "0048.png",
-      "original": "9.png",
-      "source_keypoints:":[
-      ],
-      "destination_keypoints": [
       ]
     },
 
